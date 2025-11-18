@@ -79,6 +79,47 @@ const ComprasView = ({
         completedValue: products.filter(p => p.status === 'comprado').reduce((sum, p) => sum + p.price, 0)
     };
 
+    // Estadísticas filtradas basadas en el filtro actual
+    const filteredStats = {
+        totalProducts: filteredProducts.length,
+        pendingProducts: filteredProducts.filter(p => p.status === 'pendiente').length,
+        completedProducts: filteredProducts.filter(p => p.status === 'comprado').length,
+        pendingValue: filteredProducts.filter(p => p.status === 'pendiente').reduce((sum, p) => sum + p.price, 0),
+        completedValue: filteredProducts.filter(p => p.status === 'comprado').reduce((sum, p) => sum + p.price, 0)
+    };
+
+    // Determinar qué estadísticas mostrar según el filtro
+    const getValueCardConfig = () => {
+        switch (filterStatus) {
+            case 'pendiente':
+                return {
+                    value: filteredStats.pendingValue,
+                    label: 'Valor Pendiente',
+                    icon: 'purple',
+                    bgColor: 'bg-purple-100',
+                    iconColor: 'text-purple-600'
+                };
+            case 'comprado':
+                return {
+                    value: filteredStats.completedValue,
+                    label: 'Valor Comprado',
+                    icon: 'green',
+                    bgColor: 'bg-green-100',
+                    iconColor: 'text-green-600'
+                };
+            default: // 'todos'
+                return {
+                    value: stats.pendingValue,
+                    label: 'Valor Pendiente',
+                    icon: 'purple',
+                    bgColor: 'bg-purple-100',
+                    iconColor: 'text-purple-600'
+                };
+        }
+    };
+
+    const valueCardConfig = getValueCardConfig();
+
     const categories = [
         'Tecnología', 'Hogar', 'Ropa', 'Libros', 'Deportes',
         'Música', 'Viajes', 'Comida', 'Salud', 'Otro'
@@ -108,8 +149,14 @@ const ComprasView = ({
                                 <Package2 className="w-6 h-6 text-blue-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-800">{stats.totalProducts}</p>
-                                <p className="text-gray-600 text-sm">Total Productos</p>
+                                <p className="text-2xl font-bold text-gray-800">
+                                    {filterStatus === 'todos' ? stats.totalProducts : filteredStats.totalProducts}
+                                </p>
+                                <p className="text-gray-600 text-sm">
+                                    {filterStatus === 'todos' ? 'Total Productos' : 
+                                     filterStatus === 'pendiente' ? 'Productos Pendientes' : 
+                                     'Productos Comprados'}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -120,7 +167,9 @@ const ComprasView = ({
                                 <Clock className="w-6 h-6 text-orange-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-800">{stats.pendingProducts}</p>
+                                <p className="text-2xl font-bold text-gray-800">
+                                    {filterStatus === 'todos' ? stats.pendingProducts : filteredStats.pendingProducts}
+                                </p>
                                 <p className="text-gray-600 text-sm">Pendientes</p>
                             </div>
                         </div>
@@ -132,7 +181,9 @@ const ComprasView = ({
                                 <CheckCircle className="w-6 h-6 text-green-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-800">{stats.completedProducts}</p>
+                                <p className="text-2xl font-bold text-gray-800">
+                                    {filterStatus === 'todos' ? stats.completedProducts : filteredStats.completedProducts}
+                                </p>
                                 <p className="text-gray-600 text-sm">Comprados</p>
                             </div>
                         </div>
@@ -140,18 +191,51 @@ const ComprasView = ({
 
                     <div className="bg-white rounded-xl shadow-lg p-6">
                         <div className="flex items-center gap-3">
-                            <div className="p-3 bg-purple-100 rounded-lg">
-                                <DollarSign className="w-6 h-6 text-purple-600" />
+                            <div className={`p-3 ${valueCardConfig.bgColor} rounded-lg`}>
+                                <DollarSign className={`w-6 h-6 ${valueCardConfig.iconColor}`} />
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-gray-800">
-                                    {formatCurrency(stats.pendingValue)} COP
+                                    {formatCurrency(valueCardConfig.value)}
                                 </p>
-                                <p className="text-gray-600 text-sm">Valor Pendiente</p>
+                                <p className="text-gray-600 text-sm">{valueCardConfig.label}</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Tarjetas adicionales para mostrar ambos valores cuando está en "todos" */}
+                {filterStatus === 'todos' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-emerald-100 rounded-lg">
+                                    <CheckCircle className="w-6 h-6 text-emerald-600" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold text-gray-800">
+                                        {formatCurrency(stats.completedValue)}
+                                    </p>
+                                    <p className="text-gray-600 text-sm">Valor Comprado</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-indigo-100 rounded-lg">
+                                    <DollarSign className="w-6 h-6 text-indigo-600" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold text-gray-800">
+                                        {formatCurrency(stats.pendingValue + stats.completedValue)}
+                                    </p>
+                                    <p className="text-gray-600 text-sm">Valor Total</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Controles: Filtros, búsqueda y agregar */}
                 <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
