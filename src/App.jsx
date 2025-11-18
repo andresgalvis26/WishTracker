@@ -157,46 +157,10 @@ const WishlistApp = ({ user }) => {
   };
 
 
-  // Función de edición para el modal (compatible con ComprasView)
-  const handleEditProductModal = async (updatedProduct) => {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .update({
-          name: updatedProduct.name.trim(),
-          category: updatedProduct.category,
-          price: parseFloat(updatedProduct.price),
-          priority: updatedProduct.priority,
-          notes: updatedProduct.notes.trim() || null,
-          store: updatedProduct.store.trim() || null,
-          target_date: updatedProduct.targetDate || null,
-          purchase_date: updatedProduct.purchaseDate || null
-        })
-        .eq('id', updatedProduct.id);
-
-      if (error) throw error;
-
-      // Actualizar el estado local
-      setProducts(products.map(p => 
-        p.id === updatedProduct.id 
-          ? {
-              ...p,
-              name: updatedProduct.name,
-              category: updatedProduct.category,
-              price: parseFloat(updatedProduct.price),
-              priority: updatedProduct.priority,
-              notes: updatedProduct.notes || '',
-              store: updatedProduct.store || '',
-              targetDate: updatedProduct.targetDate,
-              purchaseDate: updatedProduct.purchaseDate
-            }
-          : p
-      ));
-
-    } catch (error) {
-      console.error('Error updating product:', error);
-      throw new Error('Error al actualizar el producto');
-    }
+  // Función para abrir el modal de edición
+  const handleEditProductModal = (product) => {
+    setProductToEdit(product);
+    setShowEditModal(true);
   };
 
   // Eliminar producto - compatible con ComprasView
@@ -305,6 +269,9 @@ const WishlistApp = ({ user }) => {
             }
           : p
       ));
+
+      // Cerrar el modal después de guardar
+      closeEditModal();
 
     } catch (error) {
       console.error('Error updating product:', error);
