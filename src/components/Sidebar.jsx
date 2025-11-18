@@ -45,8 +45,8 @@ const Sidebar = ({ activeTab, setActiveTab, user, onLogout, onNavigate }) => {
               const event = new CustomEvent('toggleSidebar');
               window.dispatchEvent(event);
             }}
-            className="hidden md:block p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 btn-animate"
-            title="Ocultar sidebar"
+            className="hidden md:flex w-8 h-8 items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200 btn-animate"
+            title="Ocultar menú"
           >
             <X className="w-4 h-4" />
           </button>

@@ -383,16 +383,18 @@ const WishlistApp = ({ user }) => {
         />
       )}
 
-      {/* Área de hover invisible para mostrar sidebar en escritorio cuando está oculta */}
+      {/* Botón toggle estético para escritorio - esquina superior derecha */}
       {!sidebarVisible && (
-        <div
-          onMouseEnter={() => {
-            console.log('Mouse enter en área de hover');
+        <button
+          onClick={() => {
+            console.log('Click en botón toggle desktop');
             setSidebarVisible(true);
           }}
-          className="hidden md:block fixed top-0 left-0 w-8 h-full z-30 bg-transparent hover:bg-purple-50 hover:bg-opacity-20 transition-all duration-200"
-          title="Acercar mouse para mostrar sidebar"
-        />
+          className="hidden md:flex fixed top-6 right-6 z-40 w-12 h-12 items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-full shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-200"
+          title="Mostrar menú"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
       )}
 
       {/* Header con botón toggle para móviles */}
@@ -422,13 +424,6 @@ const WishlistApp = ({ user }) => {
           ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}
           ${sidebarVisible ? 'md:relative md:w-64' : 'md:absolute md:w-64'}
         `}
-        onMouseLeave={() => {
-          // Solo auto-ocultar en desktop cuando no está pinned
-          if (window.innerWidth >= 768) {
-            console.log('Mouse leave del sidebar - ocultando');
-            setSidebarVisible(false);
-          }
-        }}
       >
         <Sidebar 
           activeTab={activeTab}
