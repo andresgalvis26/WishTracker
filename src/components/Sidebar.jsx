@@ -1,7 +1,7 @@
 import React from 'react';
-import { Calendar, ShoppingCart, Package2, User, LogOut, Settings } from 'lucide-react';
+import { Calendar, ShoppingCart, Package2, User, LogOut, Settings, X } from 'lucide-react';
 
-const Sidebar = ({ activeTab, setActiveTab, user, onLogout }) => {
+const Sidebar = ({ activeTab, setActiveTab, user, onLogout, onNavigate }) => {
   const menuItems = [
     {
       id: 'compras',
@@ -27,14 +27,29 @@ const Sidebar = ({ activeTab, setActiveTab, user, onLogout }) => {
     <div className="w-full md:w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col h-auto md:h-screen flex-shrink-0 sidebar-animate">
       {/* Header de la sidebar */}
       <div className="p-4 md:p-6 border-b border-gray-200 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <Package2 className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Package2 className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">WishTracker</h1>
+              <p className="text-xs text-gray-500">Tu lista de deseos</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg md:text-xl font-bold text-gray-800">WishTracker</h1>
-            <p className="text-xs md:text-sm text-gray-500">Tu lista de deseos</p>
-          </div>
+          
+          {/* Botón toggle para escritorio */}
+          <button
+            onClick={() => {
+              // Implementar toggle desde la sidebar misma
+              const event = new CustomEvent('toggleSidebar');
+              window.dispatchEvent(event);
+            }}
+            className="hidden md:block p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 btn-animate"
+            title="Ocultar sidebar"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -63,7 +78,10 @@ const Sidebar = ({ activeTab, setActiveTab, user, onLogout }) => {
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  if (onNavigate) onNavigate();
+                }}
                 className={`
                   w-full flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 sidebar-item-animate btn-animate
                   ${isActive 

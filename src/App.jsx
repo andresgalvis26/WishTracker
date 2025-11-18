@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Filter, Search, Package2, DollarSign, Calendar, Tag, Star, Clock, CheckCircle, Loader2, CalendarDays, Target } from 'lucide-react';
+import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Filter, Search, Package2, DollarSign, Calendar, Tag, Star, Clock, CheckCircle, Loader2, CalendarDays, Target, Menu, Pin, PinOff } from 'lucide-react';
 import supabase from './supebase';
 import { useAuth } from './context/AuthContext';
 import { showSuccess, showError, showDeleteConfirmation, showLoading } from './utils/sweetAlert';
@@ -44,8 +44,45 @@ const App = () => {
 const WishlistApp = ({ user }) => {
   const { logout } = useAuth();
   const [products, setProducts] = useState([]);
-  const [activeTab, setActiveTab] = useState('compras'); // Nuevo estado para la navegación
-  const [actionLoading, setActionLoading] = useState(false); // Para operaciones async
+  const [activeTab, setActiveTab] = useState('compras');
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Estados para la sidebar
+  const [sidebarVisible, setSidebarVisible] = useState(() => {
+    const saved = localStorage.getItem('sidebarVisible');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  // Guardar preferencias de sidebar en localStorage
+  useEffect(() => {
+    localStorage.setItem('sidebarVisible', JSON.stringify(sidebarVisible));
+  }, [sidebarVisible]);
+
+  // Escuchar evento personalizado para toggle desde la sidebar
+  useEffect(() => {
+    const handleToggleFromSidebar = () => {
+      setSidebarVisible(false);
+    };
+
+    window.addEventListener('toggleSidebar', handleToggleFromSidebar);
+    
+    return () => {
+      window.removeEventListener('toggleSidebar', handleToggleFromSidebar);
+    };
+  }, []);
+
+  // Función simple para toggle de la sidebar
+  const toggleSidebar = () => {
+    console.log('Toggle sidebar - Estado actual:', sidebarVisible, '-> Nuevo estado:', !sidebarVisible);
+    setSidebarVisible(!sidebarVisible);
+  };
+
+  // Auto-hide sidebar en móviles cuando se navega
+  const handleContentClick = () => {
+    if (window.innerWidth < 768 && sidebarVisible) {
+      setSidebarVisible(false);
+    }
+  };
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -334,41 +371,110 @@ const WishlistApp = ({ user }) => {
   
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row relative">
       {/* Loading Overlay para operaciones */}
       <LoadingOverlay isVisible={actionLoading} text="Procesando..." />
 
+      {/* Backdrop para móviles cuando sidebar está visible */}
+      {sidebarVisible && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden sidebar-overlay"
+          onClick={() => setSidebarVisible(false)}
+        />
+      )}
+
+      {/* Área de hover invisible para mostrar sidebar en escritorio cuando está oculta */}
+      {!sidebarVisible && (
+        <div
+          onMouseEnter={() => {
+            console.log('Mouse enter en área de hover');
+            setSidebarVisible(true);
+          }}
+          className="hidden md:block fixed top-0 left-0 w-8 h-full z-30 bg-transparent hover:bg-purple-50 hover:bg-opacity-20 transition-all duration-200"
+          title="Acercar mouse para mostrar sidebar"
+        />
+      )}
+
+      {/* Header con botón toggle para móviles */}
+      <div className="fixed top-0 left-0 right-0 z-30 bg-white shadow-sm border-b border-gray-200 p-4 flex items-center gap-3 md:hidden">
+        <button
+          onClick={() => {
+            console.log('Click en botón móvil');
+            toggleSidebar();
+          }}
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 btn-animate header-toggle"
+          title={sidebarVisible ? 'Ocultar sidebar' : 'Mostrar sidebar'}
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        
+        <div className="flex items-center gap-2">
+          <Package2 className="w-6 h-6 text-purple-600" />
+          <h1 className="text-lg font-bold text-gray-800">WishTracker</h1>
+        </div>
+      </div>
+
       {/* Sidebar */}
-      <Sidebar 
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        user={user}
-        onLogout={logout}
-      />
+      <div 
+        className={`
+          fixed top-0 left-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 
+          transition-transform duration-300 ease-in-out z-50
+          ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}
+          ${sidebarVisible ? 'md:relative md:w-64' : 'md:absolute md:w-64'}
+        `}
+        onMouseLeave={() => {
+          // Solo auto-ocultar en desktop cuando no está pinned
+          if (window.innerWidth >= 768) {
+            console.log('Mouse leave del sidebar - ocultando');
+            setSidebarVisible(false);
+          }
+        }}
+      >
+        <Sidebar 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          user={user}
+          onLogout={logout}
+          onNavigate={() => {
+            // Auto-hide en móviles cuando se navega
+            if (window.innerWidth < 768) {
+              setSidebarVisible(false);
+            }
+          }}
+        />
+      </div>
 
       {/* Contenido principal */}
-      <div className="flex-1 h-screen overflow-hidden">
-        {activeTab === 'compras' ? (
-          <ComprasView
-            products={products}
-            onAddProduct={handleAddProduct}
-            onEditProduct={handleEditProductModal}
-            onDeleteProduct={handleDeleteProduct}
-            onToggleStatus={handleToggleStatus}
-            newProduct={newProduct}
-            setNewProduct={setNewProduct}
-            showAddForm={showAddForm}
-            setShowAddForm={setShowAddForm}
-            editingProduct={editingProduct}
-            resetForm={resetForm}
-          />
-        ) : activeTab === 'calendario' ? (
-          <CalendarioView products={products} />
-        ) : activeTab === 'ajustes' ? (
-          <AjustesView user={user} />
-        ) : (
-          <CalendarioView products={products} />
-        )}
+      <div 
+        className={`
+          flex-1 flex flex-col transition-all duration-300 min-h-screen
+          ${sidebarVisible ? 'pt-16 md:pt-0' : 'pt-16 md:pt-0'}
+        `}
+        onClick={handleContentClick}
+      >
+        <div className="flex-1 h-screen overflow-hidden">
+          {activeTab === 'compras' ? (
+            <ComprasView
+              products={products}
+              onAddProduct={handleAddProduct}
+              onEditProduct={handleEditProductModal}
+              onDeleteProduct={handleDeleteProduct}
+              onToggleStatus={handleToggleStatus}
+              newProduct={newProduct}
+              setNewProduct={setNewProduct}
+              showAddForm={showAddForm}
+              setShowAddForm={setShowAddForm}
+              editingProduct={editingProduct}
+              resetForm={resetForm}
+            />
+          ) : activeTab === 'calendario' ? (
+            <CalendarioView products={products} />
+          ) : activeTab === 'ajustes' ? (
+            <AjustesView user={user} />
+          ) : (
+            <CalendarioView products={products} />
+          )}
+        </div>
       </div>
 
       {/* Modales globales */}
