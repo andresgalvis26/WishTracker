@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 import ComprasView from './components/ComprasView';
 import CalendarioView from './components/CalendarioView';
+import AjustesView from './components/AjustesView';
 import CalendarModal from './components/CalendarModal';
 import EditProductModal from './components/EditProductModal';
 
@@ -326,7 +327,7 @@ const WishlistApp = ({ user }) => {
   
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
       {/* Sidebar */}
       <Sidebar 
         activeTab={activeTab}
@@ -351,6 +352,10 @@ const WishlistApp = ({ user }) => {
             editingProduct={editingProduct}
             resetForm={resetForm}
           />
+        ) : activeTab === 'calendario' ? (
+          <CalendarioView products={products} />
+        ) : activeTab === 'ajustes' ? (
+          <AjustesView user={user} />
         ) : (
           <CalendarioView products={products} />
         )}
