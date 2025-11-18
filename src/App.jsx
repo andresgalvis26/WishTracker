@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Filter, Search, Package2, DollarSign, Calendar, Tag, Star, Clock, CheckCircle, Loader2, CalendarDays, Target } from 'lucide-react';
 import supabase from './supebase';
 import { useAuth } from './context/AuthContext';
+import { showSuccess, showError, showDeleteConfirmation, showLoading } from './utils/sweetAlert';
+import { LoadingOverlay } from './components/Loading';
 import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 import ComprasView from './components/ComprasView';
@@ -43,6 +45,7 @@ const WishlistApp = ({ user }) => {
   const { logout } = useAuth();
   const [products, setProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('compras'); // Nuevo estado para la navegación
+  const [actionLoading, setActionLoading] = useState(false); // Para operaciones async
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -110,11 +113,14 @@ const WishlistApp = ({ user }) => {
   // Agregar nuevo producto
   const handleAddProduct = async () => {
     if (!newProduct.name.trim() || !newProduct.price) {
-      alert('Por favor ingresa al menos el nombre y precio del producto');
+      showError('Campos requeridos', 'Por favor ingresa al menos el nombre y precio del producto');
       return;
     }
 
     try {
+      setActionLoading(true);
+      const loadingSwal = showLoading('Agregando producto...', 'Por favor espera mientras se guarda');
+
       const { data, error } = await supabase
         .from('products')
         .insert([{
@@ -150,9 +156,14 @@ const WishlistApp = ({ user }) => {
 
       setProducts([formattedProduct, ...products]);
       resetForm();
+      
+      loadingSwal.close();
+      showSuccess('¡Producto agregado!', 'El producto se ha agregado exitosamente a tu lista');
     } catch (error) {
       console.error('Error adding product:', error);
-      alert('Error al agregar el producto');
+      showError('Error al agregar', 'No se pudo agregar el producto. Inténtalo de nuevo.');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -165,11 +176,13 @@ const WishlistApp = ({ user }) => {
 
   // Eliminar producto - compatible con ComprasView
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar este producto?')) {
-      return;
-    }
-
     try {
+      const result = await showDeleteConfirmation('el producto');
+      if (!result.isConfirmed) return;
+
+      setActionLoading(true);
+      const loadingSwal = showLoading('Eliminando producto...', 'Por favor espera');
+
       const { error } = await supabase
         .from('products')
         .delete()
@@ -179,9 +192,14 @@ const WishlistApp = ({ user }) => {
 
       // Actualizar estado local
       setProducts(products.filter(p => p.id !== id));
+      
+      loadingSwal.close();
+      showSuccess('¡Producto eliminado!', 'El producto se ha eliminado de tu lista');
     } catch (error) {
       console.error('Error deleting product:', error);
-      alert('Error al eliminar el producto');
+      showError('Error al eliminar', 'No se pudo eliminar el producto. Inténtalo de nuevo.');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -190,6 +208,10 @@ const WishlistApp = ({ user }) => {
     const newStatus = currentStatus === 'pendiente' ? 'comprado' : 'pendiente';
 
     try {
+      setActionLoading(true);
+      const statusText = newStatus === 'comprado' ? 'marcando como comprado' : 'marcando como pendiente';
+      const loadingSwal = showLoading(`Actualizando estado...`, `Por favor espera mientras se está ${statusText}`);
+
       const { error } = await supabase
         .from('products')
         .update({ status: newStatus })
@@ -201,9 +223,16 @@ const WishlistApp = ({ user }) => {
       setProducts(products.map(p =>
         p.id === id ? { ...p, status: newStatus } : p
       ));
+
+      loadingSwal.close();
+      
+      const successText = newStatus === 'comprado' ? '¡Producto marcado como comprado!' : '¡Producto marcado como pendiente!';
+      showSuccess('Estado actualizado', successText);
     } catch (error) {
       console.error('Error updating product status:', error);
-      alert('Error al cambiar el estado del producto');
+      showError('Error al actualizar', 'No se pudo cambiar el estado del producto. Inténtalo de nuevo.');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -237,6 +266,9 @@ const WishlistApp = ({ user }) => {
 
   const handleSaveEdit = async (updatedProduct) => {
     try {
+      setActionLoading(true);
+      const loadingSwal = showLoading('Actualizando producto...', 'Por favor espera mientras se guardan los cambios');
+
       const { error } = await supabase
         .from('products')
         .update({
@@ -273,9 +305,14 @@ const WishlistApp = ({ user }) => {
       // Cerrar el modal después de guardar
       closeEditModal();
 
+      loadingSwal.close();
+      showSuccess('¡Producto actualizado!', 'Los cambios se han guardado exitosamente');
+
     } catch (error) {
       console.error('Error updating product:', error);
-      throw new Error('Error al actualizar el producto');
+      showError('Error al actualizar', 'No se pudieron guardar los cambios. Inténtalo de nuevo.');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -283,9 +320,12 @@ const WishlistApp = ({ user }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-purple-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Cargando productos...</p>
+        <div className="text-center card-animate">
+          <div className="bg-white rounded-xl p-8 shadow-xl">
+            <Loader2 className="w-12 h-12 text-purple-600 loading-spin mx-auto mb-4" />
+            <p className="text-gray-600 font-medium">Cargando productos...</p>
+            <p className="text-gray-500 text-sm mt-2">Preparando tu lista de deseos</p>
+          </div>
         </div>
       </div>
     );
@@ -295,6 +335,9 @@ const WishlistApp = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
+      {/* Loading Overlay para operaciones */}
+      <LoadingOverlay isVisible={actionLoading} text="Procesando..." />
+
       {/* Sidebar */}
       <Sidebar 
         activeTab={activeTab}

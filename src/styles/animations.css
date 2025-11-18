@@ -1,0 +1,351 @@
+/* ===============================
+   SWEET ALERT CUSTOM STYLES
+   =============================== */
+
+/* Botones personalizados */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+/* Popup personalizado */
+.custom-swal-popup {
+  border-radius: 1rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.custom-swal-title {
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  font-size: 1.5rem !important;
+}
+
+.custom-swal-content {
+  color: #6b7280 !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+.custom-swal-actions {
+  gap: 0.75rem !important;
+  margin-top: 2rem !important;
+}
+
+/* ===============================
+   ANIMATIONS & TRANSITIONS
+   =============================== */
+
+/* Animaciones de entrada y salida */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Clases de utilidad para animaciones */
+.animate__animated {
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+}
+
+.animate__faster {
+  animation-duration: 0.2s;
+}
+
+.animate__fadeInDown {
+  animation-name: fadeInDown;
+}
+
+.animate__fadeOutUp {
+  animation-name: fadeOutUp;
+}
+
+.animate__fadeInUp {
+  animation-name: fadeInUp;
+}
+
+.animate__slideInRight {
+  animation-name: slideInRight;
+}
+
+.animate__slideOutRight {
+  animation-name: slideOutRight;
+}
+
+.animate__scaleIn {
+  animation-name: scaleIn;
+}
+
+.animate__scaleOut {
+  animation-name: scaleOut;
+}
+
+/* ===============================
+   COMPONENT ANIMATIONS
+   =============================== */
+
+/* Animaciones para cards */
+.card-animate {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.card-animate:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones para botones */
+.btn-animate {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-animate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-animate:active {
+  transform: translateY(0);
+  transition-duration: 0.1s;
+}
+
+/* Animaciones para modales */
+.modal-animate {
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-backdrop-animate {
+  animation: fadeInUp 0.3s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+/* Animaciones para formularios */
+.form-animate {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.input-focus {
+  transition: all 0.2s ease-in-out;
+}
+
+.input-focus:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Animaciones para la sidebar */
+.sidebar-animate {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-item-animate {
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-item-animate:hover {
+  transform: translateX(4px);
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+/* Animaciones para el loading */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animaciones para listas */
+.list-item-animate {
+  animation: slideInRight 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+.list-item-animate:nth-child(2) { animation-delay: 0.1s; }
+.list-item-animate:nth-child(3) { animation-delay: 0.2s; }
+.list-item-animate:nth-child(4) { animation-delay: 0.3s; }
+.list-item-animate:nth-child(5) { animation-delay: 0.4s; }
+
+/* Ripple effect para botones */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* ===============================
+   RESPONSIVE ANIMATIONS
+   =============================== */
+
+/* Reducir animaciones en dispositivos móviles */
+@media (max-width: 768px) {
+  .animate__animated {
+    animation-duration: 0.2s;
+  }
+  
+  .card-animate:hover {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-animate:hover {
+    transform: none;
+  }
+}
+
+/* Respeta las preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

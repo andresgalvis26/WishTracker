@@ -24,7 +24,7 @@ const Sidebar = ({ activeTab, setActiveTab, user, onLogout }) => {
   ];
 
   return (
-    <div className="w-full md:w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col h-auto md:h-screen flex-shrink-0">
+    <div className="w-full md:w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col h-auto md:h-screen flex-shrink-0 sidebar-animate">
       {/* Header de la sidebar */}
       <div className="p-4 md:p-6 border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -65,7 +65,7 @@ const Sidebar = ({ activeTab, setActiveTab, user, onLogout }) => {
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={`
-                  w-full flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200
+                  w-full flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 sidebar-item-animate btn-animate
                   ${isActive 
                     ? 'bg-purple-50 text-purple-700 shadow-sm border border-purple-200' 
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'

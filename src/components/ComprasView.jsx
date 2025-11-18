@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Search, Package2, DollarSign, Calendar, Star, Clock, CheckCircle } from 'lucide-react';
+import { LoadingButton } from './Loading';
 import CustomDatePicker from './CustomDatePicker';
 import EditProductModal from './EditProductModal';
 
@@ -143,7 +144,7 @@ const ComprasView = ({
             <div className="flex-1 overflow-y-auto p-4 md:p-6">
                 {/* Stats Cards - Dashboard */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
+                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
                             <div className="p-2 md:p-3 bg-blue-100 rounded-lg">
                                 <Package2 className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
@@ -161,7 +162,7 @@ const ComprasView = ({
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
+                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
                             <div className="p-2 md:p-3 bg-orange-100 rounded-lg">
                                 <Clock className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
@@ -175,7 +176,7 @@ const ComprasView = ({
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
+                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
                             <div className="p-2 md:p-3 bg-green-100 rounded-lg">
                                 <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
@@ -189,7 +190,7 @@ const ComprasView = ({
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
+                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
                             <div className={`p-2 md:p-3 ${valueCardConfig.bgColor} rounded-lg flex-shrink-0`}>
                                 <DollarSign className={`w-5 h-5 md:w-6 md:h-6 ${valueCardConfig.iconColor}`} />
@@ -207,7 +208,7 @@ const ComprasView = ({
                 {/* Tarjetas adicionales para mostrar ambos valores cuando está en "todos" */}
                 {filterStatus === 'todos' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-                        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
+                        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 md:p-3 bg-emerald-100 rounded-lg flex-shrink-0">
                                     <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
@@ -221,7 +222,7 @@ const ComprasView = ({
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
+                        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 md:p-3 bg-indigo-100 rounded-lg flex-shrink-0">
                                     <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-indigo-600" />
@@ -429,16 +430,17 @@ const ComprasView = ({
                             </div>
 
                             <div className="flex gap-3">
-                                <button
+                                <LoadingButton
                                     type="submit"
-                                    className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                                    className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium btn-animate"
+                                    loadingText={editingProduct ? 'Actualizando...' : 'Agregando...'}
                                 >
                                     {editingProduct ? 'Actualizar Producto' : 'Agregar Producto'}
-                                </button>
+                                </LoadingButton>
                                 <button
                                     type="button"
                                     onClick={resetForm}
-                                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 btn-animate"
                                 >
                                     Cancelar
                                 </button>
@@ -475,8 +477,12 @@ const ComprasView = ({
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {filteredProducts.map(product => (
-                            <div key={product.id} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-100 overflow-hidden h-84 flex flex-col">
+                        {filteredProducts.map((product, index) => (
+                            <div 
+                                key={product.id} 
+                                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden h-84 flex flex-col card-animate list-item-animate"
+                                style={{ animationDelay: `${index * 0.1}s` }}
+                            >
                                 {/* Header de la card */}
                                 <div className={`
                   p-4 border-b flex-shrink-0
@@ -504,14 +510,14 @@ const ComprasView = ({
                                         <div className="flex gap-1 ml-2 flex-shrink-0">
                                             <button
                                                 onClick={() => onEditProduct(product)}
-                                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 btn-animate"
                                                 title="Editar producto"
                                             >
                                                 <Edit3 className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={() => onDeleteProduct(product.id)}
-                                                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 btn-animate"
                                                 title="Eliminar producto"
                                             >
                                                 <Trash2 className="w-4 h-4" />
