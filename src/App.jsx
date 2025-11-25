@@ -422,7 +422,6 @@ const WishlistApp = ({ user }) => {
           fixed top-0 left-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 
           transition-transform duration-300 ease-in-out z-50
           ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}
-          ${sidebarVisible ? 'md:relative md:w-64' : 'md:absolute md:w-64'}
         `}
       >
         <Sidebar 
@@ -443,7 +442,7 @@ const WishlistApp = ({ user }) => {
       <div 
         className={`
           flex-1 flex flex-col transition-all duration-300 min-h-screen
-          ${sidebarVisible ? 'pt-16 md:pt-0' : 'pt-16 md:pt-0'}
+          ${sidebarVisible ? 'pt-16 md:pt-0 md:ml-64' : 'pt-16 md:pt-0 md:ml-0'}
         `}
         onClick={handleContentClick}
       >
