@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Search, Package2, DollarSign, Calendar, Star, Clock, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Search, Package2, DollarSign, Calendar, Star, Clock, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { LoadingButton } from './Loading';
 import CustomDatePicker from './CustomDatePicker';
 import EditProductModal from './EditProductModal';
@@ -20,6 +20,15 @@ const ComprasView = ({
     const [filterStatus, setFilterStatus] = useState('todos');
     const [searchText, setSearchText] = useState('');
     const [sortOrder, setSortOrder] = useState('newest');
+    
+    // Estados para paginación
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
+
+    // Resetear página cuando cambien filtros o búsqueda
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterStatus, searchText, sortOrder]);
 
     // Estados para el modal de edición
     const [showEditModal, setShowEditModal] = useState(false);
@@ -46,7 +55,25 @@ const ComprasView = ({
     // Filtrar y ordenar productos
     const filteredProducts = products
         .filter(product => {
-            const matchesStatus = filterStatus === 'todos' || product.status === filterStatus;
+            let matchesStatus = true;
+            
+            switch (filterStatus) {
+                case 'todos':
+                    matchesStatus = true;
+                    break;
+                case 'pendientes':
+                    matchesStatus = product.status === 'pendiente';
+                    break;
+                case 'comprados':
+                    matchesStatus = product.status === 'comprado';
+                    break;
+                case 'prioritarios':
+                    matchesStatus = product.priority === 'alta';
+                    break;
+                default:
+                    matchesStatus = true;
+            }
+            
             const matchesSearch = product.name.toLowerCase().includes(searchText.toLowerCase()) ||
                 product.category.toLowerCase().includes(searchText.toLowerCase()) ||
                 (product.notes && product.notes.toLowerCase().includes(searchText.toLowerCase()));
@@ -71,6 +98,13 @@ const ComprasView = ({
             }
         });
 
+    // Cálculos de paginación
+    const totalItems = filteredProducts.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
     // Calcular estadísticas para las cards de dashboard
     const stats = {
         totalProducts: products.length,
@@ -92,6 +126,33 @@ const ComprasView = ({
     // Determinar qué estadísticas mostrar según el filtro
     const getValueCardConfig = () => {
         switch (filterStatus) {
+            case 'pendientes':
+                return {
+                    value: filteredStats.pendingValue,
+                    label: 'Valor Pendiente',
+                    icon: 'purple',
+                    bgColor: 'bg-orange-100',
+                    textColor: 'text-orange-600',
+                    description: 'Total por comprar'
+                };
+            case 'comprados':
+                return {
+                    value: filteredStats.completedValue,
+                    label: 'Valor Comprado',
+                    icon: 'green',
+                    bgColor: 'bg-green-100',
+                    textColor: 'text-green-600',
+                    description: 'Total invertido'
+                };
+            case 'prioritarios':
+                return {
+                    value: products.filter(p => p.priority === 'alta').reduce((sum, p) => sum + p.price, 0),
+                    label: 'Valor Prioritario',
+                    icon: 'red',
+                    bgColor: 'bg-red-100',
+                    textColor: 'text-red-600',
+                    description: 'Productos alta prioridad'
+                };
             case 'pendiente':
                 return {
                     value: filteredStats.pendingValue,
@@ -151,12 +212,13 @@ const ComprasView = ({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
-                                    {filterStatus === 'todos' ? stats.totalProducts : filteredStats.totalProducts}
+                                    {filterStatus === 'todos' ? stats.totalProducts : filteredProducts.length}
                                 </p>
-                                <p className="text-gray-600 text-xs md:text-sm truncate">
+                                <p className="text-xs md:text-sm text-gray-600">
                                     {filterStatus === 'todos' ? 'Total Productos' : 
-                                     filterStatus === 'pendiente' ? 'Productos Pendientes' : 
-                                     'Productos Comprados'}
+                                     filterStatus === 'pendientes' ? 'Productos Pendientes' : 
+                                     filterStatus === 'comprados' ? 'Productos Comprados' :
+                                     filterStatus === 'prioritarios' ? 'Productos Prioritarios' : 'Productos'}
                                 </p>
                             </div>
                         </div>
@@ -169,7 +231,9 @@ const ComprasView = ({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
-                                    {filterStatus === 'todos' ? stats.pendingProducts : filteredStats.pendingProducts}
+                                    {filterStatus === 'todos' ? stats.pendingProducts : 
+                                     filterStatus === 'pendientes' ? filteredProducts.length :
+                                     filteredProducts.filter(p => p.status === 'pendiente').length}
                                 </p>
                                 <p className="text-gray-600 text-xs md:text-sm truncate">Pendientes</p>
                             </div>
@@ -183,7 +247,9 @@ const ComprasView = ({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
-                                    {filterStatus === 'todos' ? stats.completedProducts : filteredStats.completedProducts}
+                                    {filterStatus === 'todos' ? stats.completedProducts : 
+                                     filterStatus === 'comprados' ? filteredProducts.length :
+                                     filteredProducts.filter(p => p.status === 'comprado').length}
                                 </p>
                                 <p className="text-gray-600 text-xs md:text-sm truncate">Comprados</p>
                             </div>
@@ -238,7 +304,54 @@ const ComprasView = ({
                     </div>
                 )}
 
-                {/* Controles: Filtros, búsqueda y agregar */}
+                {/* Filtros principales - arriba */}
+                <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 mb-4">
+                    {/* Filtros visuales con botones */}
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            onClick={() => setFilterStatus('todos')}
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                                filterStatus === 'todos'
+                                    ? 'bg-gray-800 text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                            📋 Todos ({products.length})
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('pendientes')}
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                                filterStatus === 'pendientes'
+                                    ? 'bg-orange-500 text-white shadow-md'
+                                    : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                            }`}
+                        >
+                            🕒 Pendientes ({products.filter(p => p.status === 'pendiente').length})
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('comprados')}
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                                filterStatus === 'comprados'
+                                    ? 'bg-green-500 text-white shadow-md'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                            }`}
+                        >
+                            ✅ Comprados ({products.filter(p => p.status === 'comprado').length})
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('prioritarios')}
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                                filterStatus === 'prioritarios'
+                                    ? 'bg-red-500 text-white shadow-md'
+                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                            }`}
+                        >
+                            ⭐ Prioritarios ({products.filter(p => p.priority === 'alta').length})
+                        </button>
+                    </div>
+                </div>
+
+                {/* Controles: búsqueda, ordenar y agregar */}
                 <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 mb-6 md:mb-8">
                     <div className="flex flex-col gap-4">
                         {/* Búsqueda */}
@@ -256,18 +369,7 @@ const ComprasView = ({
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3">
-                            {/* Filtro de estado */}
-                            <select
-                                value={filterStatus}
-                                onChange={(e) => setFilterStatus(e.target.value)}
-                                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base flex-1"
-                            >
-                                <option value="todos">Todos los estados</option>
-                                <option value="pendiente">Pendientes</option>
-                                <option value="comprado">Comprados</option>
-                            </select>
-
-                            {/* Ordenar */}
+                            {/* Filtro de estado ya no necesario */}                            {/* Ordenar */}
                             <select
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value)}
@@ -477,7 +579,7 @@ const ComprasView = ({
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {filteredProducts.map((product, index) => (
+                        {paginatedProducts.map((product, index) => (
                             <div 
                                 key={product.id} 
                                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden h-84 flex flex-col card-animate list-item-animate"
@@ -554,8 +656,9 @@ const ComprasView = ({
                                         )}
 
                                         <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                                            <div className="flex items-center gap-2 text-xs text-gray-500">
                                                 <Calendar className="w-3 h-3" />
+                                                <span className="text-gray-400">Creación:</span>
                                                 <span className="truncate">{new Date(product.dateAdded).toLocaleDateString('es-ES')}</span>
                                             </div>
                                             <span className={`
@@ -606,6 +709,85 @@ const ComprasView = ({
                                 </div>
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {/* Controles de paginación */}
+                {filteredProducts.length > 0 && totalPages > 1 && (
+                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 mt-6">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            {/* Información de página */}
+                            <div className="text-sm text-gray-600">
+                                Mostrando {startIndex + 1} - {Math.min(endIndex, totalItems)} de {totalItems} productos
+                            </div>
+                            
+                            {/* Controles de navegación */}
+                            <div className="flex items-center gap-2">
+                                {/* Botón anterior */}
+                                <button
+                                    onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className={`
+                                        px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-1
+                                        ${currentPage === 1 
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
+                                    `}
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                    Anterior
+                                </button>
+                                
+                                {/* Números de página */}
+                                <div className="flex items-center gap-1">
+                                    {[...Array(totalPages)].map((_, index) => {
+                                        const pageNumber = index + 1;
+                                        const isCurrentPage = pageNumber === currentPage;
+                                        const showPage = 
+                                            pageNumber === 1 || 
+                                            pageNumber === totalPages || 
+                                            Math.abs(pageNumber - currentPage) <= 1;
+                                            
+                                        if (!showPage) {
+                                            if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+                                                return <span key={pageNumber} className="px-2 text-gray-400">...</span>;
+                                            }
+                                            return null;
+                                        }
+                                        
+                                        return (
+                                            <button
+                                                key={pageNumber}
+                                                onClick={() => setCurrentPage(pageNumber)}
+                                                className={`
+                                                    w-8 h-8 rounded-lg font-medium text-sm transition-all duration-200
+                                                    ${isCurrentPage 
+                                                        ? 'bg-purple-600 text-white shadow-md' 
+                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                                                `}
+                                            >
+                                                {pageNumber}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                
+                                {/* Botón siguiente */}
+                                <button
+                                    onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className={`
+                                        px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-1
+                                        ${currentPage === totalPages 
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
+                                    `}
+                                >
+                                    Siguiente
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
 
