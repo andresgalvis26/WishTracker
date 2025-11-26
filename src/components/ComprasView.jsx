@@ -70,6 +70,12 @@ const ComprasView = ({
                 case 'prioritarios':
                     matchesStatus = product.priority === 'alta';
                     break;
+                case 'media-prioridad':
+                    matchesStatus = product.priority === 'media';
+                    break;
+                case 'baja-prioridad':
+                    matchesStatus = product.priority === 'baja';
+                    break;
                 default:
                     matchesStatus = true;
             }
@@ -152,6 +158,24 @@ const ComprasView = ({
                     bgColor: 'bg-red-100',
                     textColor: 'text-red-600',
                     description: 'Productos alta prioridad'
+                };
+            case 'media-prioridad':
+                return {
+                    value: products.filter(p => p.priority === 'media').reduce((sum, p) => sum + p.price, 0),
+                    label: 'Valor Prioridad Media',
+                    icon: 'yellow',
+                    bgColor: 'bg-yellow-100',
+                    textColor: 'text-yellow-600',
+                    description: 'Productos prioridad media'
+                };
+            case 'baja-prioridad':
+                return {
+                    value: products.filter(p => p.priority === 'baja').reduce((sum, p) => sum + p.price, 0),
+                    label: 'Valor Prioridad Baja',
+                    icon: 'blue',
+                    bgColor: 'bg-blue-100',
+                    textColor: 'text-blue-600',
+                    description: 'Productos prioridad baja'
                 };
             case 'pendiente':
                 return {
@@ -338,16 +362,6 @@ const ComprasView = ({
                         >
                             ✅ Comprados ({products.filter(p => p.status === 'comprado').length})
                         </button>
-                        <button
-                            onClick={() => setFilterStatus('prioritarios')}
-                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                                filterStatus === 'prioritarios'
-                                    ? 'bg-red-500 text-white shadow-md'
-                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
-                            }`}
-                        >
-                            ⭐ Prioritarios ({products.filter(p => p.priority === 'alta').length})
-                        </button>
                     </div>
                 </div>
 
@@ -369,7 +383,30 @@ const ComprasView = ({
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3">
-                            {/* Filtro de estado ya no necesario */}                            {/* Ordenar */}
+                            {/* Filtro por prioridad */}
+                            <select
+                                value={filterStatus.includes('prioridad') || filterStatus === 'prioritarios' ? filterStatus : ''}
+                                onChange={(e) => e.target.value && setFilterStatus(e.target.value)}
+                                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base flex-1"
+                            >
+                                <option value="">Filtrar por prioridad</option>
+                                <option value="prioritarios">🔴 Prioridad Alta ({products.filter(p => p.priority === 'alta').length})</option>
+                                <option value="media-prioridad">🟡 Prioridad Media ({products.filter(p => p.priority === 'media').length})</option>
+                                <option value="baja-prioridad">🔵 Prioridad Baja ({products.filter(p => p.priority === 'baja').length})</option>
+                            </select>
+                            
+                            {/* Botón para limpiar filtro de prioridad */}
+                            {(filterStatus.includes('prioridad') || filterStatus === 'prioritarios') && (
+                                <button
+                                    onClick={() => setFilterStatus('todos')}
+                                    className="px-3 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 flex-shrink-0"
+                                    title="Limpiar filtro de prioridad"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            )}
+
+                            {/* Ordenar */}
                             <select
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value)}
@@ -667,7 +704,7 @@ const ComprasView = ({
                                                     ? 'bg-red-100 text-red-700'
                                                     : product.priority === 'media'
                                                         ? 'bg-yellow-100 text-yellow-700'
-                                                        : 'bg-green-100 text-green-700'
+                                                        : 'bg-blue-100 text-blue-700'
                                                 }
                       `}>
                                                 {product.priority === 'alta' ? '🔴 Alta' :
