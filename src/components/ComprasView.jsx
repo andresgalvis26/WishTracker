@@ -12,10 +12,8 @@ const ComprasView = ({
     onDeleteProduct,
     onToggleStatus,
     newProduct,
-    setNewProduct,
     showAddForm,
     setShowAddForm,
-    editingProduct,
     resetForm
 }) => {
     const [filterStatus, setFilterStatus] = useState('todos');
@@ -207,17 +205,6 @@ const ComprasView = ({
 
     const valueCardConfig = getValueCardConfig();
 
-    const categories = [
-        'Tecnología', 'Hogar', 'Ropa', 'Libros', 'Deportes',
-        'Música', 'Viajes', 'Comida', 'Salud', 'Otro'
-    ];
-
-    const priorities = [
-        { value: 'alta', label: 'Alta', icon: '🔴' },
-        { value: 'media', label: 'Media', icon: '🟡' },
-        { value: 'baja', label: 'Baja', icon: '🟢' }
-    ];
-
     const priorityFilterOptions = [
         { value: 'todos', label: 'Filtrar por prioridad', isPlaceholder: true },
         {
@@ -245,10 +232,6 @@ const ComprasView = ({
         { value: 'priority', label: 'Por prioridad' }
     ];
 
-    const categoryOptions = categories.map((category) => ({
-        value: category,
-        label: category
-    }));
 
     return (
         <div className="flex flex-col h-full bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
@@ -456,158 +439,15 @@ const ComprasView = ({
                     </div>
                 </div>
 
-                {/* Formulario para agregar/editar */}
-                {showAddForm && (
-                    <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-200">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                                {editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto'}
-                            </h3>
-                            <button
-                                onClick={resetForm}
-                                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        <form onSubmit={onAddProduct} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Nombre del producto *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={newProduct.name}
-                                        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                                        placeholder="Ej: iPhone 15, Laptop Gaming..."
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Categoría
-                                    </label>
-                                    <ElegantDropdown
-                                        value={newProduct.category}
-                                        onChange={(selectedValue) => setNewProduct({ ...newProduct, category: selectedValue })}
-                                        options={categoryOptions}
-                                        placeholder="Seleccionar categoría"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Precio *
-                                    </label>
-                                    <input
-                                        type="number"
-                                        required
-                                        step="0.01"
-                                        value={newProduct.price}
-                                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                                        placeholder="0.00"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Prioridad
-                                    </label>
-                                    <div className="flex gap-2">
-                                        {priorities.map(priority => (
-                                            <button
-                                                key={priority.value}
-                                                type="button"
-                                                onClick={() => setNewProduct({ ...newProduct, priority: priority.value })}
-                                                className={`
-                          flex-1 p-3 rounded-lg border-2 transition-colors text-sm font-medium
-                          ${newProduct.priority === priority.value
-                                                        ? 'border-purple-300 bg-purple-50 text-purple-700'
-                                                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-                                                    }
-                        `}
-                                            >
-                                                {priority.icon} {priority.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Tienda (Opcional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={newProduct.store}
-                                        onChange={(e) => setNewProduct({ ...newProduct, store: e.target.value })}
-                                        placeholder="Ej: Amazon, Media Markt..."
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Notas (Opcional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={newProduct.notes}
-                                        onChange={(e) => setNewProduct({ ...newProduct, notes: e.target.value })}
-                                        placeholder="Ej: Esperar ofertas, color azul"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Fecha objetivo de compra (Opcional)
-                                    </label>
-                                    <CustomDatePicker
-                                        selected={newProduct.targetDate}
-                                        onChange={(date) => setNewProduct({ ...newProduct, targetDate: date })}
-                                        placeholderText="Selecciona cuándo planeas comprarlo"
-                                        dateType="target"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Fecha de compra (Opcional)
-                                    </label>
-                                    <CustomDatePicker
-                                        selected={newProduct.purchaseDate}
-                                        onChange={(date) => setNewProduct({ ...newProduct, purchaseDate: date })}
-                                        placeholderText="Selecciona cuándo lo compraste"
-                                        dateType="purchase"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex gap-3">
-                                <LoadingButton
-                                    type="submit"
-                                    className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium btn-animate"
-                                    loadingText={editingProduct ? 'Actualizando...' : 'Agregando...'}
-                                >
-                                    {editingProduct ? 'Actualizar Producto' : 'Agregar Producto'}
-                                </LoadingButton>
-                                <button
-                                    type="button"
-                                    onClick={resetForm}
-                                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 btn-animate"
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
+                {/* Modal para agregar producto (reemplaza el formulario inline) */}
+                <EditProductModal
+                    isOpen={showAddForm}
+                    onClose={resetForm}
+                    product={showAddForm ? newProduct : null}
+                    onSave={async (productObj) => {
+                        await onAddProduct(productObj);
+                    }}
+                />
 
                 {/* Lista de productos */}
                 {filteredProducts.length === 0 ? (
@@ -640,24 +480,24 @@ const ComprasView = ({
                         {paginatedProducts.map((product, index) => (
                             <div 
                                 key={product.id} 
-                                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden h-84 flex flex-col card-animate list-item-animate"
+                                className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden h-84 flex flex-col card-animate list-item-animate"
                                 style={{ animationDelay: `${index * 0.1}s` }}
                             >
                                 {/* Header de la card */}
                                 <div className={`
-                  p-4 border-b flex-shrink-0
+                  p-4 border-b flex-shrink-0 rounded-t-2xl
                   ${product.status === 'comprado'
-                                        ? 'bg-green-50 border-green-200'
+                                        ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 border-emerald-200'
                                         : product.priority === 'alta'
-                                            ? 'bg-red-50 border-red-200'
+                                            ? 'bg-gradient-to-r from-red-50 to-red-100 border-red-200'
                                             : product.priority === 'media'
-                                                ? 'bg-yellow-50 border-yellow-200'
-                                                : 'bg-blue-50 border-blue-200'
+                                                ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200'
+                                                : 'bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200'
                                     }
                 `}>
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-1">
+                                            <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-1">
                                                 {product.name}
                                             </h3>
                                             <div className="flex items-center gap-2 mb-2">
@@ -741,29 +581,23 @@ const ComprasView = ({
                                     </div>
 
                                     {/* Botón siempre al fondo */}
-                                    <button
-                                        onClick={() => onToggleStatus(product.id, product.status)}
-                                        disabled={product.status === 'comprado'}
-                                        className={`
-                      w-full py-2 px-4 rounded-lg font-medium transition-all mt-auto
-                      ${product.status === 'comprado'
-                                                ? 'bg-green-100 text-green-700 cursor-not-allowed flex items-center justify-center gap-2'
-                                                : 'bg-purple-600 text-white hover:bg-purple-700 flex items-center justify-center gap-2'
-                                            }
-                    `}
-                                    >
-                                        {product.status === 'comprado' ? (
-                                            <>
-                                                <CheckCircle className="w-4 h-4" />
-                                                Comprado
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ShoppingCart className="w-4 h-4" />
-                                                Comprar
-                                            </>
-                                        )}
-                                    </button>
+                                    {product.status === 'comprado' ? (
+                                        <button
+                                            disabled
+                                            className="w-full py-3 px-4 rounded-b-2xl font-medium transition-all mt-auto bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 flex items-center justify-center gap-2 cursor-not-allowed shadow-inner"
+                                        >
+                                            <CheckCircle className="w-4 h-4" />
+                                            Comprado
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => onToggleStatus(product.id, product.status)}
+                                            className="w-full py-3 px-4 rounded-b-2xl font-semibold transition-transform mt-auto bg-gradient-to-r from-purple-600 via-indigo-600 to-fuchsia-600 text-white hover:scale-[1.02] hover:shadow-xl flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                                        >
+                                            <ShoppingCart className="w-4 h-4" />
+                                            Comprar
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

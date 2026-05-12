@@ -32,19 +32,19 @@ const CustomDatePicker = ({
         placeholder={placeholder}
         readOnly
         disabled={disabled}
-        className={`w-full pl-12 pr-4 py-3 border rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 cursor-pointer ${
+        className={`w-full pl-12 pr-4 py-3 border rounded-2xl text-gray-700 placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 cursor-pointer ${
           error 
-            ? 'border-red-400 focus:ring-red-400/50' 
-            : 'border-gray-300 focus:ring-purple-400/50 focus:border-purple-400'
-        } ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white hover:border-purple-300'} ${className}`}
+            ? 'border-red-400 focus:ring-red-400/50 focus:ring-offset-red-50' 
+            : 'border-slate-200 bg-white/95 focus:ring-purple-500 focus:border-purple-300 hover:border-purple-300 hover:shadow-md'
+        } ${disabled ? 'bg-gray-50 cursor-not-allowed text-gray-400 border-gray-200' : ''} ${className}`}
       />
-      <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
         {type === 'purchase' ? (
-          <CheckCircle className={`w-5 h-5 ${disabled ? 'text-gray-400' : 'text-green-500'}`} />
+          <CheckCircle className={`w-5 h-5 ${disabled ? 'text-gray-300' : 'text-green-500'}`} />
         ) : type === 'target' ? (
-          <Clock className={`w-5 h-5 ${disabled ? 'text-gray-400' : 'text-blue-500'}`} />
+          <Clock className={`w-5 h-5 ${disabled ? 'text-gray-300' : 'text-blue-500'}`} />
         ) : (
-          <Calendar className={`w-5 h-5 ${disabled ? 'text-gray-400' : 'text-purple-500'}`} />
+          <Calendar className={`w-5 h-5 ${disabled ? 'text-gray-300' : 'text-purple-500'}`} />
         )}
       </div>
     </div>

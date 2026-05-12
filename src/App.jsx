@@ -148,8 +148,10 @@ const WishlistApp = ({ user }) => {
   }, [user.id]);
 
   // Agregar nuevo producto
-  const handleAddProduct = async () => {
-    if (!newProduct.name.trim() || !newProduct.price) {
+  const handleAddProduct = async (productOverride) => {
+    const source = productOverride || newProduct;
+
+    if (!source.name.trim() || !source.price) {
       showError('Campos requeridos', 'Por favor ingresa al menos el nombre y precio del producto');
       return;
     }
@@ -161,16 +163,16 @@ const WishlistApp = ({ user }) => {
       const { data, error } = await supabase
         .from('products')
         .insert([{
-          name: newProduct.name.trim(),
-          category: newProduct.category,
-          price: parseFloat(newProduct.price),
-          priority: newProduct.priority,
-          notes: newProduct.notes.trim() || null,
-          store: newProduct.store.trim() || null,
+          name: source.name.trim(),
+          category: source.category,
+          price: parseFloat(source.price),
+          priority: source.priority,
+          notes: source.notes.trim() || null,
+          store: source.store.trim() || null,
           status: 'pendiente',
           user_id: user.id,
-          target_date: newProduct.targetDate || null,
-          purchase_date: newProduct.purchaseDate || null
+          target_date: source.targetDate || null,
+          purchase_date: source.purchaseDate || null
         }])
         .select();
 

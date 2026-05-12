@@ -118,6 +118,8 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
     }
   };
 
+  const isAddMode = !product?.id;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto overscroll-contain" onWheel={(e) => e.stopPropagation()}>
       <div className="w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl" onWheel={(e) => e.stopPropagation()}>
@@ -127,10 +129,10 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
             <Package2 className="w-6 h-6 text-purple-600" />
             <div>
               <h2 className="text-xl font-bold text-gray-800">
-                Editar Producto
+                {isAddMode ? 'Agregar Producto' : 'Editar Producto'}
               </h2>
               <p className="text-sm text-gray-600">
-                Modifica la información del producto
+                {isAddMode ? 'Crea un nuevo producto en tu lista' : 'Modifica la información del producto'}
               </p>
             </div>
           </div>
@@ -312,15 +314,15 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="px-6 py-2 bg-purple-600 text-white rounded-2xl shadow-sm hover:bg-purple-700 transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl shadow-md hover:shadow-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
           >
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Guardando...
+                {isAddMode ? 'Agregando...' : 'Guardando...'}
               </>
             ) : (
-              'Guardar Cambios'
+              isAddMode ? 'Agregar Producto' : 'Guardar Cambios'
             )}
           </button>
         </div>

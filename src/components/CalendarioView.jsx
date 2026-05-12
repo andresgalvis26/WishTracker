@@ -16,6 +16,15 @@ const CalendarioView = ({ products }) => {
     setShowCalendarModal(true);
   };
 
+  // Función para formatear precios en pesos colombianos
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
   // Cerrar modal del calendario
   const closeCalendarModal = () => {
     setShowCalendarModal(false);
@@ -30,8 +39,8 @@ const CalendarioView = ({ products }) => {
   const purchasedThisMonth = products.filter(p => {
     if (!p.purchaseDate) return false;
     const purchaseDate = new Date(p.purchaseDate);
-    return purchaseDate.getMonth() === thisMonth.getMonth() && 
-           purchaseDate.getFullYear() === thisMonth.getFullYear();
+    return purchaseDate.getMonth() === thisMonth.getMonth() &&
+      purchaseDate.getFullYear() === thisMonth.getFullYear();
   }).length;
 
   return (
@@ -78,7 +87,7 @@ const CalendarioView = ({ products }) => {
           </div>
         ) : (
           <>
-            <ProductCalendar 
+            <ProductCalendar
               products={products}
               onDateClick={handleDateClick}
             />
@@ -86,7 +95,7 @@ const CalendarioView = ({ products }) => {
             {/* Resumen adicional */}
             <div className="mt-8 bg-white rounded-xl shadow-lg p-6 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Resumen del Calendario</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4">
                   <div className="flex items-center gap-3">
@@ -141,7 +150,7 @@ const CalendarioView = ({ products }) => {
                           <div key={product.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div>
                               <p className="font-medium text-gray-800">{product.name}</p>
-                              <p className="text-sm text-gray-600">{product.category} • ${product.price}</p>
+                              <p className="text-sm text-gray-600">{product.category} - {formatCurrency(product.price)} COP</p>
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-medium text-blue-600">

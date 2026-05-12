@@ -24,7 +24,9 @@ import {
   CheckCircle,
   Sparkles,
   ArrowRight,
-  User
+  User,
+  HandCoins,
+  ShoppingBasket
 } from 'lucide-react';
 
 const Login = () => {
@@ -186,20 +188,20 @@ const Login = () => {
                             <div className="flex justify-center mb-4">
                                 <div className="relative">
                                     <div className="bg-gradient-to-r from-purple-400 to-pink-400 p-4 rounded-2xl shadow-lg">
-                                        <ShoppingCart className="text-white w-8 h-8" />
+                                        <ShoppingBasket className="text-white w-8 h-8" />
                                     </div>
                                     <Sparkles className="absolute -top-1 -right-1 text-yellow-300 w-4 h-4" />
                                 </div>
                             </div>
                             
                             <h1 className="text-3xl font-bold text-white mb-2">
-                                WishTracker
+                                WishFlow
                             </h1>
                             
                             <p className="text-white/70 text-sm">
                                 {isRegister 
-                                    ? 'Crea tu cuenta y organiza tus deseos' 
-                                    : 'Inicia sesión para gestionar tus listas'
+                                    ? 'Crea tu cuenta y organiza tus compras y/o deseos.' 
+                                    : 'Inicia sesión para gestionar tus compras y lista de deseos.'
                                 }
                             </p>
                         </div>
