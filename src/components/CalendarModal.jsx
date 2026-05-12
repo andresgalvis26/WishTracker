@@ -16,7 +16,7 @@ const CalendarModal = ({ isOpen, onClose, selectedDate, products }) => {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'COP'
     }).format(price);
   };
 

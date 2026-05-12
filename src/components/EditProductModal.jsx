@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { X, Package2, DollarSign, Tag, Star, MapPin, FileText, Calendar, Target } from 'lucide-react';
 import CustomDatePicker from './CustomDatePicker';
+import ElegantDropdown from './ElegantDropdown';
+
+const inputClass = (hasError = false) => `
+  w-full rounded-2xl border px-4 py-3 text-slate-700 shadow-sm transition-all duration-200
+  bg-white/95 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+  ${hasError ? 'border-red-300 focus:ring-red-500' : 'border-slate-200'}
+`;
+
+const textareaClass = 'w-full rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 text-slate-700 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 resize-none';
 
 const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
   const [formData, setFormData] = useState({
@@ -33,6 +42,17 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
       setErrors({});
     }
   }, [product, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -99,8 +119,8 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto overscroll-contain" onWheel={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl" onWheel={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50">
           <div className="flex items-center gap-3">
@@ -124,7 +144,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <div className="max-h-[calc(90vh-140px)] overflow-y-auto overscroll-contain p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error general */}
             {errors.general && (
@@ -144,13 +164,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Ej: iPhone 15, Laptop Gaming, Zapatillas Nike..."
-                className={`
-                  w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all
-                  ${errors.name 
-                    ? 'border-red-300 focus:ring-red-500' 
-                    : 'border-gray-300 focus:ring-purple-500'
-                  }
-                `}
+                className={inputClass(errors.name)}
                 disabled={isLoading}
               />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -163,16 +177,15 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                   <Tag className="w-4 h-4" />
                   Categoría
                 </label>
-                <select
+                <ElegantDropdown
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  disabled={isLoading}
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+                  onChange={(selectedValue) => setFormData({ ...formData, category: selectedValue })}
+                  options={categories.map((category) => ({
+                    value: category,
+                    label: category
+                  }))}
+                  placeholder="Seleccionar categoría"
+                />
               </div>
 
               <div>
@@ -186,13 +199,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   placeholder="0.00"
-                  className={`
-                    w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all
-                    ${errors.price 
-                      ? 'border-red-300 focus:ring-red-500' 
-                      : 'border-gray-300 focus:ring-purple-500'
-                    }
-                  `}
+                  className={inputClass(errors.price)}
                   disabled={isLoading}
                 />
                 {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
@@ -238,7 +245,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                 value={formData.store}
                 onChange={(e) => setFormData({ ...formData, store: e.target.value })}
                 placeholder="Ej: Amazon, Media Markt, Zara..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className={inputClass()}
                 disabled={isLoading}
               />
             </div>
@@ -285,7 +292,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Ej: Esperar ofertas, color azul, talla M..."
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                className={textareaClass}
                 disabled={isLoading}
               />
             </div>
@@ -298,14 +305,14 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
             type="button"
             onClick={handleClose}
             disabled={isLoading}
-            className="px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="px-6 py-2 text-slate-600 bg-white border border-slate-200 rounded-2xl shadow-sm hover:bg-slate-50 transition-all duration-200 disabled:opacity-50"
           >
             Cancelar
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2 bg-purple-600 text-white rounded-2xl shadow-sm hover:bg-purple-700 transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
           >
             {isLoading ? (
               <>

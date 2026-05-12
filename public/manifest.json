@@ -1,7 +1,7 @@
 {
-  "name": "WishTracker - Gestión de Compras",
-  "short_name": "WishTracker",
-  "description": "Organiza tus deseos y lleva un control de tus compras",
+  "name": "Wishflow",
+  "short_name": "Wishflow",
+  "description": "El flujo entre querer algo, planearlo y finalmente comprarlo.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

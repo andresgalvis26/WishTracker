@@ -412,7 +412,7 @@ const WishlistApp = ({ user }) => {
         
         <div className="flex items-center gap-2">
           <Package2 className="w-6 h-6 text-purple-600" />
-          <h1 className="text-lg font-bold text-gray-800">WishTracker</h1>
+          <h1 className="text-lg font-bold text-gray-800">Wishflow</h1>
         </div>
       </div>
 

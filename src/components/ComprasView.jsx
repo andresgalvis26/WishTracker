@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Search, Package2, DollarSign, Calendar, Star, Clock, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, ShoppingCart, X, Edit3, Trash2, Search, Package2, DollarSign, Calendar, Star, Clock, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { LoadingButton } from './Loading';
+import ElegantDropdown from './ElegantDropdown';
 import CustomDatePicker from './CustomDatePicker';
 import EditProductModal from './EditProductModal';
 
@@ -217,12 +218,44 @@ const ComprasView = ({
         { value: 'baja', label: 'Baja', icon: '🟢' }
     ];
 
+    const priorityFilterOptions = [
+        { value: 'todos', label: 'Filtrar por prioridad', isPlaceholder: true },
+        {
+            value: 'prioritarios',
+            label: `Prioridad Alta (${products.filter(p => p.priority === 'alta').length})`,
+            icon: '🔴'
+        },
+        {
+            value: 'media-prioridad',
+            label: `Prioridad Media (${products.filter(p => p.priority === 'media').length})`,
+            icon: '🟡'
+        },
+        {
+            value: 'baja-prioridad',
+            label: `Prioridad Baja (${products.filter(p => p.priority === 'baja').length})`,
+            icon: '🔵'
+        }
+    ];
+
+    const sortOptions = [
+        { value: 'newest', label: 'Más reciente' },
+        { value: 'oldest', label: 'Más antiguo' },
+        { value: 'price-high', label: 'Precio: Mayor a menor' },
+        { value: 'price-low', label: 'Precio: Menor a mayor' },
+        { value: 'priority', label: 'Por prioridad' }
+    ];
+
+    const categoryOptions = categories.map((category) => ({
+        value: category,
+        label: category
+    }));
+
     return (
         <div className="flex flex-col h-full bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
             {/* Header con título - fijo en la parte superior */}
             <div className="bg-white shadow-sm border-b border-gray-200 p-6 flex-shrink-0">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestión de Compras</h2>
-                <p className="text-gray-600">Organiza tus deseos y lleva un control de tus compras</p>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestor de Compras</h2>
+                <p className="text-gray-600">El flujo entre querer algo, planearlo y finalmente comprarlo.</p>
             </div>
 
             {/* Contenido scrolleable */}
@@ -371,29 +404,25 @@ const ComprasView = ({
                         {/* Búsqueda */}
                         <div className="w-full">
                             <div className="relative">
-                                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                <Search className="w-4 h-4 absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" />
                                 <input
                                     type="text"
                                     placeholder="Buscar productos..."
                                     value={searchText}
                                     onChange={(e) => setSearchText(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base"
+                                    className="w-full rounded-2xl border border-slate-200 bg-white/95 pl-11 pr-4 py-3 text-sm md:text-base text-slate-700 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 placeholder:text-slate-400"
                                 />
                             </div>
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3">
                             {/* Filtro por prioridad */}
-                            <select
-                                value={filterStatus.includes('prioridad') || filterStatus === 'prioritarios' ? filterStatus : ''}
-                                onChange={(e) => e.target.value && setFilterStatus(e.target.value)}
-                                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base flex-1"
-                            >
-                                <option value="">Filtrar por prioridad</option>
-                                <option value="prioritarios">🔴 Prioridad Alta ({products.filter(p => p.priority === 'alta').length})</option>
-                                <option value="media-prioridad">🟡 Prioridad Media ({products.filter(p => p.priority === 'media').length})</option>
-                                <option value="baja-prioridad">🔵 Prioridad Baja ({products.filter(p => p.priority === 'baja').length})</option>
-                            </select>
+                            <ElegantDropdown
+                                value={filterStatus.includes('prioridad') || filterStatus === 'prioritarios' ? filterStatus : 'todos'}
+                                onChange={(selectedValue) => setFilterStatus(selectedValue)}
+                                options={priorityFilterOptions}
+                                placeholder="Filtrar por prioridad"
+                            />
                             
                             {/* Botón para limpiar filtro de prioridad */}
                             {(filterStatus.includes('prioridad') || filterStatus === 'prioritarios') && (
@@ -407,22 +436,17 @@ const ComprasView = ({
                             )}
 
                             {/* Ordenar */}
-                            <select
+                            <ElegantDropdown
                                 value={sortOrder}
-                                onChange={(e) => setSortOrder(e.target.value)}
-                                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base flex-1"
-                            >
-                                <option value="newest">Más reciente</option>
-                                <option value="oldest">Más antiguo</option>
-                                <option value="price-high">Precio: Mayor a menor</option>
-                                <option value="price-low">Precio: Menor a mayor</option>
-                                <option value="priority">Por prioridad</option>
-                            </select>
+                                onChange={(selectedValue) => setSortOrder(selectedValue)}
+                                options={sortOptions}
+                                placeholder="Ordenar por"
+                            />
 
                             {/* Botón agregar */}
                             <button
                                 onClick={() => setShowAddForm(!showAddForm)}
-                                className="flex items-center justify-center gap-2 px-4 md:px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm md:text-base whitespace-nowrap"
+                                className="flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-gradient-to-r from-purple-600 via-indigo-600 to-fuchsia-600 px-4 md:px-6 py-3 text-sm md:text-base font-semibold whitespace-nowrap text-white shadow-lg shadow-purple-500/25 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-purple-500/30 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                             >
                                 <Plus className="w-4 h-4 md:w-5 md:h-5" />
                                 <span className="hidden sm:inline">Agregar Producto</span>
@@ -467,15 +491,12 @@ const ComprasView = ({
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Categoría
                                     </label>
-                                    <select
+                                    <ElegantDropdown
                                         value={newProduct.category}
-                                        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    >
-                                        {categories.map(cat => (
-                                            <option key={cat} value={cat}>{cat}</option>
-                                        ))}
-                                    </select>
+                                        onChange={(selectedValue) => setNewProduct({ ...newProduct, category: selectedValue })}
+                                        options={categoryOptions}
+                                        placeholder="Seleccionar categoría"
+                                    />
                                 </div>
 
                                 <div>

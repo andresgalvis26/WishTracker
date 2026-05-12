@@ -16,8 +16,12 @@ import {
   Sun,
   Globe
 } from 'lucide-react';
+import ElegantDropdown from './ElegantDropdown';
 
-const AjustesView = ({ user, onUpdateUser }) => {
+const inputClass = 'w-full rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 text-slate-700 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-slate-100 disabled:text-slate-400 disabled:hover:shadow-sm disabled:hover:border-slate-200';
+const inputClassReadonly = 'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-500 shadow-sm';
+
+const AjustesView = ({ user }) => {
   // Estados para las diferentes secciones
   const [activeSection, setActiveSection] = useState('perfil');
   const [isEditing, setIsEditing] = useState(false);
@@ -158,7 +162,7 @@ const AjustesView = ({ user, onUpdateUser }) => {
                   value={userProfile.nombre}
                   onChange={(e) => setUserProfile({...userProfile, nombre: e.target.value})}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                    className={inputClass}
                   placeholder="Tu nombre completo"
                 />
               </div>
@@ -171,7 +175,7 @@ const AjustesView = ({ user, onUpdateUser }) => {
                   type="email"
                   value={userProfile.email}
                   disabled
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                    className={inputClassReadonly}
                 />
                 <p className="text-xs text-gray-500 mt-1">El email no se puede modificar</p>
               </div>
@@ -185,7 +189,7 @@ const AjustesView = ({ user, onUpdateUser }) => {
                   value={userProfile.telefono}
                   onChange={(e) => setUserProfile({...userProfile, telefono: e.target.value})}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                    className={inputClass}
                   placeholder="+57 300 123 4567"
                 />
               </div>
@@ -216,17 +220,15 @@ const AjustesView = ({ user, onUpdateUser }) => {
                   Moneda Preferida
                 </label>
               </div>
-              <select
+              <ElegantDropdown
                 value={moneda}
-                onChange={(e) => setMoneda(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                {monedas.map(mon => (
-                  <option key={mon.code} value={mon.code}>
-                    {mon.symbol} {mon.name} ({mon.code})
-                  </option>
-                ))}
-              </select>
+                onChange={(selectedValue) => setMoneda(selectedValue)}
+                options={monedas.map((mon) => ({
+                  value: mon.code,
+                  label: `${mon.symbol} ${mon.name} (${mon.code})`
+                }))}
+                placeholder="Seleccionar moneda"
+              />
             </div>
 
             {/* Tema */}
@@ -353,7 +355,7 @@ const AjustesView = ({ user, onUpdateUser }) => {
                   value={nuevaCategoria}
                   onChange={(e) => setNuevaCategoria(e.target.value)}
                   placeholder="Ej: Gaming, Mascotas, Jardinería..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className={inputClass}
                   onKeyPress={(e) => e.key === 'Enter' && handleAddCategoria()}
                 />
                 <button
