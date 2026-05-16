@@ -42,6 +42,17 @@ const ComprasView = ({
         }).format(amount);
     };
 
+    const getMonthLabel = (purchaseDate, dateAdded) => {
+        const sourceDate = purchaseDate || dateAdded;
+        if (!sourceDate) return '';
+
+        const parsedDate = new Date(sourceDate);
+        if (Number.isNaN(parsedDate.getTime())) return '';
+
+        const month = parsedDate.toLocaleDateString('es-ES', { month: 'long' });
+        return month.charAt(0).toUpperCase() + month.slice(1);
+    };
+
     const closeEditModal = () => {
         setShowEditModal(false);
         setProductToEdit(null);
@@ -480,7 +491,7 @@ const ComprasView = ({
                         {paginatedProducts.map((product, index) => (
                             <div 
                                 key={product.id} 
-                                className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden h-84 flex flex-col card-animate list-item-animate"
+                                className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden h-96 flex flex-col card-animate list-item-animate"
                                 style={{ animationDelay: `${index * 0.1}s` }}
                             >
                                 {/* Header de la card */}
@@ -528,24 +539,28 @@ const ComprasView = ({
 
                                 {/* Contenido de la card - área flexible */}
                                 <div className="p-4 flex-1 flex flex-col">
-                                    <div className="flex-1">
-                                        {product.notes && (
-                                            <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-                                                {product.notes}
+                                    <div className="flex-1 flex flex-col gap-2">
+                                        <div className="min-h-[2rem]">
+                                            <p className={`text-sm line-clamp-2 ${product.notes?.trim() ? 'text-gray-600' : 'text-gray-400'}`}>
+                                                {product.notes?.trim()
+                                                    ? product.notes
+                                                    : product.status === 'comprado'
+                                                        ? 'Compra registrada sin notas adicionales.'
+                                                        : 'Aun sin notas. Agrega detalles para comparar mejor.'}
                                             </p>
-                                        )}
+                                        </div>
 
                                         {/* Fechas de objetivo y compra */}
                                         {(product.targetDate || product.purchaseDate) && (
-                                            <div className="mb-3 space-y-1">
+                                            <div className="flex flex-wrap gap-2 items-center">
                                                 {product.targetDate && (
-                                                    <div className="flex items-center gap-2 text-xs text-blue-600">
+                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] font-semibold text-sky-700 shadow-sm whitespace-nowrap">
                                                         <Calendar className="w-3 h-3 flex-shrink-0" />
                                                         <span>Objetivo: {new Date(product.targetDate).toLocaleDateString('es-ES')}</span>
                                                     </div>
                                                 )}
                                                 {product.purchaseDate && (
-                                                    <div className="flex items-center gap-2 text-xs text-green-600">
+                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 shadow-sm whitespace-nowrap">
                                                         <ShoppingCart className="w-3 h-3 flex-shrink-0" />
                                                         <span>Comprado: {new Date(product.purchaseDate).toLocaleDateString('es-ES')}</span>
                                                     </div>
@@ -553,11 +568,10 @@ const ComprasView = ({
                                             </div>
                                         )}
 
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                                                <Calendar className="w-3 h-3" />
-                                                <span className="text-gray-400">Creación:</span>
-                                                <span className="truncate">{new Date(product.dateAdded).toLocaleDateString('es-ES')}</span>
+                                        <div className="flex items-center justify-between gap-3 min-h-[1.75rem]">
+                                            <div className="inline-flex max-w-[calc(100%-4.5rem)] items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 shadow-sm whitespace-nowrap">
+                                                <Clock className="w-3 h-3 flex-shrink-0" />
+                                                <span>Creación: {new Date(product.dateAdded).toLocaleDateString('es-ES')}</span>
                                             </div>
                                             <span className={`
                         px-2 py-1 rounded-full text-xs font-medium flex-shrink-0
@@ -573,11 +587,21 @@ const ComprasView = ({
                                             </span>
                                         </div>
 
-                                        {product.store && (
-                                            <p className="text-xs text-gray-500 mb-3 truncate">
-                                                <span className="font-medium">Tienda:</span> {product.store}
-                                            </p>
-                                        )}
+                                        <div className="min-h-[1rem]">
+                                            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-700 shadow-sm whitespace-nowrap">
+                                                <Calendar className="w-3 h-3 flex-shrink-0" />
+                                                <span>Mes: {getMonthLabel(product.purchaseDate, product.targetDate)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="min-h-[1rem] mb-2">
+                                            {product.store && (
+                                                <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[11px] font-semibold text-orange-700 shadow-sm whitespace-nowrap">
+                                                    <Package2 className="w-3 h-3 flex-shrink-0" />
+                                                    <span>Tienda: {product.store}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* Botón siempre al fondo */}

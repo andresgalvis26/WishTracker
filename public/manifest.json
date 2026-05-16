@@ -1,6 +1,6 @@
 {
-  "name": "WishFlow",
-  "short_name": "WishFlow",
+  "name": "WishTracker",
+  "short_name": "WishTracker",
   "description": "El flujo entre querer algo, planearlo y finalmente comprarlo.",
   "start_url": "/",
   "display": "standalone",

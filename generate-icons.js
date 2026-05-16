@@ -32,7 +32,7 @@ const iconSizes = [
 ];
 
 async function generateIcons() {
-    const inputFile = path.join(__dirname, 'public', 'WishTracker01.png');
+    const inputFile = path.join(__dirname, 'public', 'WishTracker02.png');
     const outputDir = path.join(__dirname, 'public');
 
     // Verificar que el archivo fuente existe

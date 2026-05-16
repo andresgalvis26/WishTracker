@@ -33,7 +33,7 @@ const Sidebar = ({ activeTab, setActiveTab, user, onLogout, onNavigate }) => {
               <Package2 className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">WishFlow</h1>
+              <h1 className="text-xl font-bold text-gray-800">WishTracker</h1>
               <p className="text-xs text-gray-500">Tu lista de deseos</p>
             </div>
           </div>
