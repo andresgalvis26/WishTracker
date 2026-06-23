@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, ShoppingCart, X, Edit3, Trash2, Search, Package2, DollarSign, Calendar, Star, Clock, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, ShoppingCart, X, Edit3, Trash2, Search, Package2, DollarSign, Calendar, Star, Clock, CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, Paperclip, ExternalLink } from 'lucide-react';
 import { LoadingButton } from './Loading';
 import ElegantDropdown from './ElegantDropdown';
 import CustomDatePicker from './CustomDatePicker';
 import EditProductModal from './EditProductModal';
+import supabase from '../supebase';  
 
 const ComprasView = ({
     products,
@@ -17,9 +18,11 @@ const ComprasView = ({
     resetForm
 }) => {
     const [filterStatus, setFilterStatus] = useState('todos');
+    const [filterMonth, setFilterMonth] = useState('todos');
     const [searchText, setSearchText] = useState('');
     const [sortOrder, setSortOrder] = useState('newest');
-    
+    const [showMoneyValues, setShowMoneyValues] = useState(true);
+
     // Estados para paginación
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
@@ -27,7 +30,7 @@ const ComprasView = ({
     // Resetear página cuando cambien filtros o búsqueda
     useEffect(() => {
         setCurrentPage(1);
-    }, [filterStatus, searchText, sortOrder]);
+    }, [filterStatus, filterMonth, searchText, sortOrder]);
 
     // Estados para el modal de edición
     const [showEditModal, setShowEditModal] = useState(false);
@@ -42,6 +45,8 @@ const ComprasView = ({
         }).format(amount);
     };
 
+    const displayCurrency = (amount) => (showMoneyValues ? formatCurrency(amount) : 'COP ••••••');
+
     const getMonthLabel = (purchaseDate, dateAdded) => {
         const sourceDate = purchaseDate || dateAdded;
         if (!sourceDate) return '';
@@ -53,6 +58,24 @@ const ComprasView = ({
         return month.charAt(0).toUpperCase() + month.slice(1);
     };
 
+    const getMonthKey = (dateValue) => {
+        if (!dateValue) return '';
+
+        const parsedDate = new Date(dateValue);
+        if (Number.isNaN(parsedDate.getTime())) return '';
+
+        const year = parsedDate.getFullYear();
+        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}`;
+    };
+
+    const formatMonthOptionLabel = (monthKey) => {
+        const [year, month] = monthKey.split('-').map(Number);
+        const date = new Date(year, month - 1, 1);
+        const label = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        return label.charAt(0).toUpperCase() + label.slice(1);
+    };
+
     const closeEditModal = () => {
         setShowEditModal(false);
         setProductToEdit(null);
@@ -62,11 +85,33 @@ const ComprasView = ({
         await onEditProduct(updatedProduct);
     };
 
+    const handleViewReceipt = async (product) => {
+        try {
+            console.log(`Intentando abrir comprobante para el producto: ${product.name}`);
+            console.log(product);
+            if (!product.receiptPath) {
+                //showError('Sin comprobante', 'Este producto no tiene comprobante adjunto');
+                return;
+            }
+
+            const { data, error } = await supabase.storage
+                .from('purchase-receipts')
+                .createSignedUrl(product.receiptPath, 60 * 5);
+
+            if (error) throw error;
+
+            window.open(data.signedUrl, '_blank');
+        } catch (error) {
+            console.error('Error opening receipt:', error);
+            //showError('Error', 'No se pudo abrir el comprobante');
+        }
+    };
+
     // Filtrar y ordenar productos
     const filteredProducts = products
         .filter(product => {
             let matchesStatus = true;
-            
+
             switch (filterStatus) {
                 case 'todos':
                     matchesStatus = true;
@@ -89,11 +134,12 @@ const ComprasView = ({
                 default:
                     matchesStatus = true;
             }
-            
+
+            const matchesMonth = filterMonth === 'todos' || getMonthKey(product.purchaseDate) === filterMonth;
             const matchesSearch = product.name.toLowerCase().includes(searchText.toLowerCase()) ||
                 product.category.toLowerCase().includes(searchText.toLowerCase()) ||
                 (product.notes && product.notes.toLowerCase().includes(searchText.toLowerCase()));
-            return matchesStatus && matchesSearch;
+            return matchesStatus && matchesMonth && matchesSearch;
         })
         .sort((a, b) => {
             switch (sortOrder) {
@@ -205,7 +251,7 @@ const ComprasView = ({
                 };
             default: // 'todos'
                 return {
-                    value: stats.pendingValue,
+                    value: filterMonth !== 'todos' || searchText.trim() !== '' ? filteredStats.pendingValue : stats.pendingValue,
                     label: 'Valor Pendiente',
                     icon: 'purple',
                     bgColor: 'bg-purple-100',
@@ -215,6 +261,26 @@ const ComprasView = ({
     };
 
     const valueCardConfig = getValueCardConfig();
+    const hasActiveFilters = filterStatus !== 'todos' || filterMonth !== 'todos' || searchText.trim() !== '';
+
+    const purchaseMonthCounts = products.reduce((accumulator, product) => {
+        const monthKey = getMonthKey(product.purchaseDate);
+        if (!monthKey) return accumulator;
+
+        accumulator[monthKey] = (accumulator[monthKey] || 0) + 1;
+        return accumulator;
+    }, {});
+
+    const monthFilterOptions = [
+        { value: 'todos', label: 'Todos los meses', isPlaceholder: false },
+        ...Object.entries(purchaseMonthCounts)
+            .sort(([firstMonth], [secondMonth]) => secondMonth.localeCompare(firstMonth))
+            .map(([monthKey, count]) => ({
+                value: monthKey,
+                label: `${formatMonthOptionLabel(monthKey)} (${count})`,
+                icon: '📅'
+            }))
+    ];
 
     const priorityFilterOptions = [
         { value: 'todos', label: 'Filtrar por prioridad', isPlaceholder: true },
@@ -254,6 +320,19 @@ const ComprasView = ({
 
             {/* Contenido scrolleable */}
             <div className="flex-1 overflow-y-auto p-4 md:p-6">
+                <div className="mb-4 flex justify-end">
+                    <button
+                        type="button"
+                        onClick={() => setShowMoneyValues((current) => !current)}
+                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/95 px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-200 hover:border-purple-300 hover:text-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                        title={showMoneyValues ? 'Ocultar valores' : 'Mostrar valores'}
+                        aria-label={showMoneyValues ? 'Ocultar valores monetarios' : 'Mostrar valores monetarios'}
+                    >
+                        {showMoneyValues ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        <span>{showMoneyValues ? 'Ocultar valores' : 'Mostrar valores'}</span>
+                    </button>
+                </div>
+
                 {/* Stats Cards - Dashboard */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
                     <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
@@ -263,13 +342,13 @@ const ComprasView = ({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
-                                    {filterStatus === 'todos' ? stats.totalProducts : filteredProducts.length}
+                                    {!hasActiveFilters ? stats.totalProducts : filteredProducts.length}
                                 </p>
                                 <p className="text-xs md:text-sm text-gray-600">
-                                    {filterStatus === 'todos' ? 'Total Productos' : 
-                                     filterStatus === 'pendientes' ? 'Productos Pendientes' : 
-                                     filterStatus === 'comprados' ? 'Productos Comprados' :
-                                     filterStatus === 'prioritarios' ? 'Productos Prioritarios' : 'Productos'}
+                                    {!hasActiveFilters ? 'Total Productos' :
+                                        filterStatus === 'pendientes' ? 'Productos Pendientes' :
+                                            filterStatus === 'comprados' ? 'Productos Comprados' :
+                                                filterStatus === 'prioritarios' ? 'Productos Prioritarios' : 'Productos'}
                                 </p>
                             </div>
                         </div>
@@ -282,9 +361,9 @@ const ComprasView = ({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
-                                    {filterStatus === 'todos' ? stats.pendingProducts : 
-                                     filterStatus === 'pendientes' ? filteredProducts.length :
-                                     filteredProducts.filter(p => p.status === 'pendiente').length}
+                                    {!hasActiveFilters ? stats.pendingProducts :
+                                        filterStatus === 'pendientes' ? filteredProducts.length :
+                                            filteredProducts.filter(p => p.status === 'pendiente').length}
                                 </p>
                                 <p className="text-gray-600 text-xs md:text-sm truncate">Pendientes</p>
                             </div>
@@ -298,9 +377,9 @@ const ComprasView = ({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
-                                    {filterStatus === 'todos' ? stats.completedProducts : 
-                                     filterStatus === 'comprados' ? filteredProducts.length :
-                                     filteredProducts.filter(p => p.status === 'comprado').length}
+                                    {!hasActiveFilters ? stats.completedProducts :
+                                        filterStatus === 'comprados' ? filteredProducts.length :
+                                            filteredProducts.filter(p => p.status === 'comprado').length}
                                 </p>
                                 <p className="text-gray-600 text-xs md:text-sm truncate">Comprados</p>
                             </div>
@@ -314,7 +393,7 @@ const ComprasView = ({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-lg md:text-2xl font-bold text-gray-800 break-all leading-tight">
-                                    {formatCurrency(valueCardConfig.value)}
+                                    {displayCurrency(valueCardConfig.value)}
                                 </p>
                                 <p className="text-gray-600 text-xs md:text-sm truncate">{valueCardConfig.label}</p>
                             </div>
@@ -323,7 +402,7 @@ const ComprasView = ({
                 </div>
 
                 {/* Tarjetas adicionales para mostrar ambos valores cuando está en "todos" */}
-                {filterStatus === 'todos' && (
+                {filterStatus === 'todos' && filterMonth === 'todos' && searchText.trim() === '' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
                         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                             <div className="flex items-center gap-3">
@@ -332,7 +411,7 @@ const ComprasView = ({
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="text-lg md:text-2xl font-bold text-gray-800 break-all leading-tight">
-                                        {formatCurrency(stats.completedValue)}
+                                        {displayCurrency(stats.completedValue)}
                                     </p>
                                     <p className="text-gray-600 text-xs md:text-sm truncate">Valor Comprado</p>
                                 </div>
@@ -346,7 +425,7 @@ const ComprasView = ({
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="text-lg md:text-2xl font-bold text-gray-800 break-all leading-tight">
-                                        {formatCurrency(stats.pendingValue + stats.completedValue)}
+                                        {displayCurrency(stats.pendingValue + stats.completedValue)}
                                     </p>
                                     <p className="text-gray-600 text-xs md:text-sm truncate">Valor Total</p>
                                 </div>
@@ -361,31 +440,28 @@ const ComprasView = ({
                     <div className="flex flex-wrap gap-2">
                         <button
                             onClick={() => setFilterStatus('todos')}
-                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                                filterStatus === 'todos'
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${filterStatus === 'todos'
                                     ? 'bg-gray-800 text-white shadow-md'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
+                                }`}
                         >
                             📋 Todos ({products.length})
                         </button>
                         <button
                             onClick={() => setFilterStatus('pendientes')}
-                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                                filterStatus === 'pendientes'
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${filterStatus === 'pendientes'
                                     ? 'bg-orange-500 text-white shadow-md'
                                     : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                            }`}
+                                }`}
                         >
                             🕒 Pendientes ({products.filter(p => p.status === 'pendiente').length})
                         </button>
                         <button
                             onClick={() => setFilterStatus('comprados')}
-                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                                filterStatus === 'comprados'
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${filterStatus === 'comprados'
                                     ? 'bg-green-500 text-white shadow-md'
                                     : 'bg-green-100 text-green-700 hover:bg-green-200'
-                            }`}
+                                }`}
                         >
                             ✅ Comprados ({products.filter(p => p.status === 'comprado').length})
                         </button>
@@ -417,13 +493,32 @@ const ComprasView = ({
                                 options={priorityFilterOptions}
                                 placeholder="Filtrar por prioridad"
                             />
-                            
+
                             {/* Botón para limpiar filtro de prioridad */}
                             {(filterStatus.includes('prioridad') || filterStatus === 'prioritarios') && (
                                 <button
                                     onClick={() => setFilterStatus('todos')}
                                     className="px-3 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 flex-shrink-0"
                                     title="Limpiar filtro de prioridad"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            )}
+
+                            {/* Filtro por mes de compra */}
+                            <ElegantDropdown
+                                value={filterMonth}
+                                onChange={(selectedValue) => setFilterMonth(selectedValue)}
+                                options={monthFilterOptions}
+                                placeholder="Filtrar por mes"
+                            />
+
+                            {/* BotÃ³n para limpiar filtro de mes */}
+                            {filterMonth !== 'todos' && (
+                                <button
+                                    onClick={() => setFilterMonth('todos')}
+                                    className="px-3 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 flex-shrink-0"
+                                    title="Limpiar filtro de mes"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -465,18 +560,18 @@ const ComprasView = ({
                     <div className="bg-white rounded-xl shadow-lg p-12 text-center">
                         <Package2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-medium text-gray-500 mb-2">
-                            {searchText || filterStatus !== 'todos'
+                            {searchText || filterStatus !== 'todos' || filterMonth !== 'todos'
                                 ? 'No se encontraron productos'
                                 : 'No tienes productos en tu lista'
                             }
                         </h3>
                         <p className="text-gray-400 mb-6">
-                            {searchText || filterStatus !== 'todos'
+                            {searchText || filterStatus !== 'todos' || filterMonth !== 'todos'
                                 ? 'Intenta cambiar los filtros de búsqueda'
                                 : 'Comienza agregando tu primer producto deseado'
                             }
                         </p>
-                        {(!searchText && filterStatus === 'todos') && (
+                        {(!searchText && filterStatus === 'todos' && filterMonth === 'todos') && (
                             <button
                                 onClick={() => setShowAddForm(true)}
                                 className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
@@ -487,11 +582,11 @@ const ComprasView = ({
                         )}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
                         {paginatedProducts.map((product, index) => (
-                            <div 
-                                key={product.id} 
-                                className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden h-96 flex flex-col card-animate list-item-animate"
+                            <div
+                                key={product.id}
+                                className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden min-h-[30rem] flex flex-col card-animate list-item-animate"
                                 style={{ animationDelay: `${index * 0.1}s` }}
                             >
                                 {/* Header de la card */}
@@ -514,7 +609,7 @@ const ComprasView = ({
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className="text-sm text-gray-600 truncate">{product.category}</span>
                                                 <span className="text-lg font-bold text-gray-800 whitespace-nowrap">
-                                                    {formatCurrency(product.price)} COP
+                                                    {displayCurrency(product.price)}
                                                 </span>
                                             </div>
                                         </div>
@@ -539,9 +634,9 @@ const ComprasView = ({
 
                                 {/* Contenido de la card - área flexible */}
                                 <div className="p-4 flex-1 flex flex-col">
-                                    <div className="flex-1 flex flex-col gap-2">
-                                        <div className="min-h-[2rem]">
-                                            <p className={`text-sm line-clamp-2 ${product.notes?.trim() ? 'text-gray-600' : 'text-gray-400'}`}>
+                                    <div className="flex-1 flex flex-col gap-3">
+                                        <div className="min-h-[2.5rem] rounded-2xl bg-slate-50/70 px-3 py-2">
+                                            <p className={`text-sm leading-5 line-clamp-3 ${product.notes?.trim() ? 'text-gray-600' : 'text-gray-400'}`}>
                                                 {product.notes?.trim()
                                                     ? product.notes
                                                     : product.status === 'comprado'
@@ -552,15 +647,15 @@ const ComprasView = ({
 
                                         {/* Fechas de objetivo y compra */}
                                         {(product.targetDate || product.purchaseDate) && (
-                                            <div className="flex flex-wrap gap-2 items-center">
+                                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                                 {product.targetDate && (
-                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] font-semibold text-sky-700 shadow-sm whitespace-nowrap">
+                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-[11px] font-semibold text-sky-700 shadow-sm whitespace-nowrap">
                                                         <Calendar className="w-3 h-3 flex-shrink-0" />
                                                         <span>Objetivo: {new Date(product.targetDate).toLocaleDateString('es-ES')}</span>
                                                     </div>
                                                 )}
                                                 {product.purchaseDate && (
-                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 shadow-sm whitespace-nowrap">
+                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-semibold text-emerald-700 shadow-sm whitespace-nowrap">
                                                         <ShoppingCart className="w-3 h-3 flex-shrink-0" />
                                                         <span>Comprado: {new Date(product.purchaseDate).toLocaleDateString('es-ES')}</span>
                                                     </div>
@@ -568,13 +663,13 @@ const ComprasView = ({
                                             </div>
                                         )}
 
-                                        <div className="flex items-center justify-between gap-3 min-h-[1.75rem]">
-                                            <div className="inline-flex max-w-[calc(100%-4.5rem)] items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 shadow-sm whitespace-nowrap">
+                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-semibold text-amber-700 shadow-sm whitespace-nowrap">
                                                 <Clock className="w-3 h-3 flex-shrink-0" />
                                                 <span>Creación: {new Date(product.dateAdded).toLocaleDateString('es-ES')}</span>
                                             </div>
                                             <span className={`
-                        px-2 py-1 rounded-full text-xs font-medium flex-shrink-0
+                        px-3 py-1.5 rounded-full text-xs font-medium flex-shrink-0
                         ${product.priority === 'alta'
                                                     ? 'bg-red-100 text-red-700'
                                                     : product.priority === 'media'
@@ -587,20 +682,39 @@ const ComprasView = ({
                                             </span>
                                         </div>
 
-                                        <div className="min-h-[1rem]">
-                                            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-700 shadow-sm whitespace-nowrap">
+                                        <div>
+                                            <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-[11px] font-semibold text-violet-700 shadow-sm whitespace-nowrap">
                                                 <Calendar className="w-3 h-3 flex-shrink-0" />
                                                 <span>Mes: {getMonthLabel(product.purchaseDate, product.targetDate)}</span>
                                             </div>
                                         </div>
 
-                                        <div className="min-h-[1rem] mb-2">
-                                            {product.store && (
-                                                <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[11px] font-semibold text-orange-700 shadow-sm whitespace-nowrap">
-                                                    <Package2 className="w-3 h-3 flex-shrink-0" />
-                                                    <span>Tienda: {product.store}</span>
-                                                </div>
-                                            )}
+                                        <div className="mb-3">
+                                            <div className="flex flex-wrap gap-2">
+                                                {product.store && (
+                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-[11px] font-semibold text-orange-700 shadow-sm whitespace-nowrap">
+                                                        <Package2 className="w-3 h-3 flex-shrink-0" />
+                                                        <span>Tienda: {product.store}</span>
+                                                    </div>
+                                                )}
+                                                {product.receiptPath ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleViewReceipt(product)}
+                                                        className="inline-flex max-w-full items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-[11px] font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-100 whitespace-nowrap"
+                                                        title={product.receiptName || 'Ver comprobante'}
+                                                    >
+                                                        <Paperclip className="w-3 h-3 flex-shrink-0" />
+                                                        <span className="truncate">Comprobante</span>
+                                                        <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                                    </button>
+                                                ) : (
+                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-500 shadow-sm whitespace-nowrap">
+                                                        <Paperclip className="w-3 h-3 flex-shrink-0" />
+                                                        <span>Sin comprobante</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -636,7 +750,7 @@ const ComprasView = ({
                             <div className="text-sm text-gray-600">
                                 Mostrando {startIndex + 1} - {Math.min(endIndex, totalItems)} de {totalItems} productos
                             </div>
-                            
+
                             {/* Controles de navegación */}
                             <div className="flex items-center gap-2">
                                 {/* Botón anterior */}
@@ -645,40 +759,40 @@ const ComprasView = ({
                                     disabled={currentPage === 1}
                                     className={`
                                         px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-1
-                                        ${currentPage === 1 
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        ${currentPage === 1
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
                                     `}
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                     Anterior
                                 </button>
-                                
+
                                 {/* Números de página */}
                                 <div className="flex items-center gap-1">
                                     {[...Array(totalPages)].map((_, index) => {
                                         const pageNumber = index + 1;
                                         const isCurrentPage = pageNumber === currentPage;
-                                        const showPage = 
-                                            pageNumber === 1 || 
-                                            pageNumber === totalPages || 
+                                        const showPage =
+                                            pageNumber === 1 ||
+                                            pageNumber === totalPages ||
                                             Math.abs(pageNumber - currentPage) <= 1;
-                                            
+
                                         if (!showPage) {
                                             if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
                                                 return <span key={pageNumber} className="px-2 text-gray-400">...</span>;
                                             }
                                             return null;
                                         }
-                                        
+
                                         return (
                                             <button
                                                 key={pageNumber}
                                                 onClick={() => setCurrentPage(pageNumber)}
                                                 className={`
                                                     w-8 h-8 rounded-lg font-medium text-sm transition-all duration-200
-                                                    ${isCurrentPage 
-                                                        ? 'bg-purple-600 text-white shadow-md' 
+                                                    ${isCurrentPage
+                                                        ? 'bg-purple-600 text-white shadow-md'
                                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
                                                 `}
                                             >
@@ -687,15 +801,15 @@ const ComprasView = ({
                                         );
                                     })}
                                 </div>
-                                
+
                                 {/* Botón siguiente */}
                                 <button
                                     onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
                                     disabled={currentPage === totalPages}
                                     className={`
                                         px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-1
-                                        ${currentPage === totalPages 
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        ${currentPage === totalPages
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
                                     `}
                                 >

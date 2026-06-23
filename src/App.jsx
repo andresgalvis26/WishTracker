@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar';
 import ComprasView from './components/ComprasView';
 import CalendarioView from './components/CalendarioView';
 import AjustesView from './components/AjustesView';
+import Dashboard from './pages/Dashboard';
 import CalendarModal from './components/CalendarModal';
 import EditProductModal from './components/EditProductModal';
 
@@ -44,7 +45,7 @@ const App = () => {
 const WishlistApp = ({ user }) => {
   const { logout } = useAuth();
   const [products, setProducts] = useState([]);
-  const [activeTab, setActiveTab] = useState('compras');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [actionLoading, setActionLoading] = useState(false);
 
   // Estados para la sidebar
@@ -65,7 +66,7 @@ const WishlistApp = ({ user }) => {
     };
 
     window.addEventListener('toggleSidebar', handleToggleFromSidebar);
-    
+
     return () => {
       window.removeEventListener('toggleSidebar', handleToggleFromSidebar);
     };
@@ -86,11 +87,11 @@ const WishlistApp = ({ user }) => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  
+
   // Estados para el modal de edición
   const [showEditModal, setShowEditModal] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null);
-  
+
   // Estados para el calendario
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -108,6 +109,43 @@ const WishlistApp = ({ user }) => {
   });
 
   const [loading, setLoading] = useState(true);
+
+  const uploadReceiptFile = async (receiptFile, productId) => {
+    if (!receiptFile) return {};
+
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw new Error('No se pudo obtener el usuario autenticado para la subida del recibo.');
+    }
+
+    const safeFileName = receiptFile.name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9._-]/g, '-');
+
+    const path = `${user.id}/${productId}/${Date.now()}-${safeFileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('purchase-receipts')
+      .upload(path, receiptFile, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: receiptFile.type
+      });
+
+    if (uploadError) throw uploadError;
+
+    return {
+      receipt_path: path,
+      receipt_name: receiptFile.name,
+      receipt_type: receiptFile.type,
+      receipt_size: receiptFile.size
+    };
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -133,7 +171,12 @@ const WishlistApp = ({ user }) => {
           status: product.status || 'pendiente',
           dateAdded: product.created_at,
           targetDate: product.target_date,
-          purchaseDate: product.purchase_date
+          purchaseDate: product.purchase_date,
+          receiptUrl: product.receipt_url || null,
+          receiptPath: product.receipt_path || null,
+          receiptName: product.receipt_name || null,
+          receiptType: product.receipt_type || null,
+          receiptSize: product.receipt_size || null
         }));
 
         setProducts(formattedProducts);
@@ -143,7 +186,7 @@ const WishlistApp = ({ user }) => {
         setLoading(false);
       }
     };
-    
+
     fetchProducts();
   }, [user.id]);
 
@@ -178,24 +221,41 @@ const WishlistApp = ({ user }) => {
 
       if (error) throw error;
 
+      const createdProduct = data[0];
+      const receiptData = await uploadReceiptFile(source.receiptFile, createdProduct.id);
+
+      if (Object.keys(receiptData).length > 0) {
+        const { error: receiptUpdateError } = await supabase
+          .from('products')
+          .update(receiptData)
+          .eq('id', createdProduct.id);
+
+        if (receiptUpdateError) throw receiptUpdateError;
+      }
+
       // Agregar el producto al estado local
       const formattedProduct = {
-        id: data[0].id,
-        name: data[0].name,
-        category: data[0].category,
-        price: parseFloat(data[0].price),
-        priority: data[0].priority,
-        notes: data[0].notes || '',
-        store: data[0].store || '',
-        status: data[0].status,
-        dateAdded: data[0].created_at,
-        targetDate: data[0].target_date,
-        purchaseDate: data[0].purchase_date
+        id: createdProduct.id,
+        name: createdProduct.name,
+        category: createdProduct.category,
+        price: parseFloat(createdProduct.price),
+        priority: createdProduct.priority,
+        notes: createdProduct.notes || '',
+        store: createdProduct.store || '',
+        status: createdProduct.status,
+        dateAdded: createdProduct.created_at,
+        targetDate: createdProduct.target_date,
+        purchaseDate: createdProduct.purchase_date,
+        receiptUrl: createdProduct.receipt_url || null,
+        receiptPath: receiptData.receipt_path || createdProduct.receipt_path || null,
+        receiptName: receiptData.receipt_name || createdProduct.receipt_name || null,
+        receiptType: receiptData.receipt_type || createdProduct.receipt_type || null,
+        receiptSize: receiptData.receipt_size || createdProduct.receipt_size || null
       };
 
       setProducts([formattedProduct, ...products]);
       resetForm();
-      
+
       loadingSwal.close();
       showSuccess('¡Producto agregado!', 'El producto se ha agregado exitosamente a tu lista');
     } catch (error) {
@@ -231,7 +291,7 @@ const WishlistApp = ({ user }) => {
 
       // Actualizar estado local
       setProducts(products.filter(p => p.id !== id));
-      
+
       loadingSwal.close();
       showSuccess('¡Producto eliminado!', 'El producto se ha eliminado de tu lista');
     } catch (error) {
@@ -264,7 +324,7 @@ const WishlistApp = ({ user }) => {
       ));
 
       loadingSwal.close();
-      
+
       const successText = newStatus === 'comprado' ? '¡Producto marcado como comprado!' : '¡Producto marcado como pendiente!';
       showSuccess('Estado actualizado', successText);
     } catch (error) {
@@ -308,6 +368,8 @@ const WishlistApp = ({ user }) => {
       setActionLoading(true);
       const loadingSwal = showLoading('Actualizando producto...', 'Por favor espera mientras se guardan los cambios');
 
+      const receiptData = await uploadReceiptFile(updatedProduct.receiptFile, updatedProduct.id);
+
       const { error } = await supabase
         .from('products')
         .update({
@@ -318,26 +380,32 @@ const WishlistApp = ({ user }) => {
           notes: updatedProduct.notes.trim() || null,
           store: updatedProduct.store.trim() || null,
           target_date: updatedProduct.targetDate || null,
-          purchase_date: updatedProduct.purchaseDate || null
+          purchase_date: updatedProduct.purchaseDate || null,
+          ...receiptData
         })
         .eq('id', updatedProduct.id);
 
       if (error) throw error;
 
       // Actualizar el estado local
-      setProducts(products.map(p => 
-        p.id === updatedProduct.id 
+      setProducts(products.map(p =>
+        p.id === updatedProduct.id
           ? {
-              ...p,
-              name: updatedProduct.name,
-              category: updatedProduct.category,
-              price: parseFloat(updatedProduct.price),
-              priority: updatedProduct.priority,
-              notes: updatedProduct.notes || '',
-              store: updatedProduct.store || '',
-              targetDate: updatedProduct.targetDate,
-              purchaseDate: updatedProduct.purchaseDate
-            }
+            ...p,
+            name: updatedProduct.name,
+            category: updatedProduct.category,
+            price: parseFloat(updatedProduct.price),
+            priority: updatedProduct.priority,
+            notes: updatedProduct.notes || '',
+            store: updatedProduct.store || '',
+            targetDate: updatedProduct.targetDate,
+            purchaseDate: updatedProduct.purchaseDate,
+            receiptUrl: updatedProduct.receiptUrl || p.receiptUrl || null,
+            receiptPath: receiptData.receipt_path || updatedProduct.receiptPath || p.receiptPath || null,
+            receiptName: receiptData.receipt_name || updatedProduct.receiptName || p.receiptName || null,
+            receiptType: receiptData.receipt_type || updatedProduct.receiptType || p.receiptType || null,
+            receiptSize: receiptData.receipt_size || updatedProduct.receiptSize || p.receiptSize || null
+          }
           : p
       ));
 
@@ -370,7 +438,7 @@ const WishlistApp = ({ user }) => {
     );
   }
 
-  
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row relative">
@@ -379,7 +447,7 @@ const WishlistApp = ({ user }) => {
 
       {/* Backdrop para móviles cuando sidebar está visible */}
       {sidebarVisible && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden sidebar-overlay"
           onClick={() => setSidebarVisible(false)}
         />
@@ -411,7 +479,7 @@ const WishlistApp = ({ user }) => {
         >
           <Menu className="w-5 h-5" />
         </button>
-        
+
         <div className="flex items-center gap-2">
           <Package2 className="w-6 h-6 text-purple-600" />
           <h1 className="text-lg font-bold text-gray-800">WishTracker</h1>
@@ -419,14 +487,14 @@ const WishlistApp = ({ user }) => {
       </div>
 
       {/* Sidebar */}
-      <div 
+      <div
         className={`
           fixed top-0 left-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 
           transition-transform duration-300 ease-in-out z-50
           ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <Sidebar 
+        <Sidebar
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           user={user}
@@ -441,7 +509,7 @@ const WishlistApp = ({ user }) => {
       </div>
 
       {/* Contenido principal */}
-      <div 
+      <div
         className={`
           flex-1 flex flex-col transition-all duration-300 min-h-screen
           ${sidebarVisible ? 'pt-16 md:pt-0 md:ml-64' : 'pt-16 md:pt-0 md:ml-0'}
@@ -449,7 +517,9 @@ const WishlistApp = ({ user }) => {
         onClick={handleContentClick}
       >
         <div className="flex-1 h-screen overflow-hidden">
-          {activeTab === 'compras' ? (
+          {activeTab === 'dashboard' ? (
+            <Dashboard user={user} products={products} />
+          ) : activeTab === 'compras' ? (
             <ComprasView
               products={products}
               onAddProduct={handleAddProduct}
@@ -468,7 +538,7 @@ const WishlistApp = ({ user }) => {
           ) : activeTab === 'ajustes' ? (
             <AjustesView user={user} />
           ) : (
-            <CalendarioView products={products} />
+            <Dashboard user={user} products={products} />
           )}
         </div>
       </div>
@@ -488,7 +558,7 @@ const WishlistApp = ({ user }) => {
         onSave={handleSaveEdit}
       />
     </div>
-    );
+  );
 };
 
 export default App;

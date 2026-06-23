@@ -30,7 +30,13 @@ export const showSuccess = (title, text = '', timer = 3000) => {
     timerProgressBar: true,
     showConfirmButton: false,
     toast: true,
-    position: 'top-end'
+    position: 'top-end',
+    backdrop: false,
+    customClass: {
+      popup: 'custom-swal-popup custom-swal-toast',
+      title: 'custom-swal-title custom-swal-toast-title',
+      content: 'custom-swal-content custom-swal-toast-content'
+    }
   });
 };
 
