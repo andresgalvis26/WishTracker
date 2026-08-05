@@ -5,6 +5,7 @@ import './styles/animations.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 // Registrar Service Worker para PWA
 if ('serviceWorker' in navigator) {
@@ -23,7 +24,9 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
       <ThemeProvider>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
       </ThemeProvider>
     </AuthProvider>
   </StrictMode>,

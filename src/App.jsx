@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, ShoppingCart, Check, X, Edit3, Trash2, Filter, Search, Package2, DollarSign, Calendar, Tag, Star, Clock, CheckCircle, Loader2, CalendarDays, Target, Menu, Pin, PinOff } from 'lucide-react';
-import supabase from './supebase';
+import supabase from './supabase';
 import { useAuth } from './context/AuthContext';
 import { showSuccess, showError, showDeleteConfirmation, showLoading } from './utils/sweetAlert';
 import { LoadingOverlay } from './components/Loading';
@@ -10,8 +10,6 @@ import ComprasView from './components/ComprasView';
 import CalendarioView from './components/CalendarioView';
 import AjustesView from './components/AjustesView';
 import Dashboard from './pages/Dashboard';
-import CalendarModal from './components/CalendarModal';
-import EditProductModal from './components/EditProductModal';
 
 const App = () => {
   const { user, loading: authLoading } = useAuth();
@@ -74,7 +72,7 @@ const WishlistApp = ({ user }) => {
 
   // Función simple para toggle de la sidebar
   const toggleSidebar = () => {
-    console.log('Toggle sidebar - Estado actual:', sidebarVisible, '-> Nuevo estado:', !sidebarVisible);
+    //  - Estado actual:', sidebarVisible, '-> Nuevo estado:', !sidebarVisible);
     setSidebarVisible(!sidebarVisible);
   };
 
@@ -87,15 +85,6 @@ const WishlistApp = ({ user }) => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-
-  // Estados para el modal de edición
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [productToEdit, setProductToEdit] = useState(null);
-
-  // Estados para el calendario
-  const [showCalendarModal, setShowCalendarModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedDateProducts, setSelectedDateProducts] = useState({ purchased: [], target: [] });
 
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -199,9 +188,11 @@ const WishlistApp = ({ user }) => {
       return;
     }
 
+    let loadingSwal = null;
+
     try {
       setActionLoading(true);
-      const loadingSwal = showLoading('Agregando producto...', 'Por favor espera mientras se guarda');
+      loadingSwal = showLoading('Agregando producto...', 'Por favor espera mientras se guarda');
 
       const { data, error } = await supabase
         .from('products')
@@ -260,18 +251,13 @@ const WishlistApp = ({ user }) => {
       showSuccess('¡Producto agregado!', 'El producto se ha agregado exitosamente a tu lista');
     } catch (error) {
       console.error('Error adding product:', error);
+      loadingSwal?.close();
       showError('Error al agregar', 'No se pudo agregar el producto. Inténtalo de nuevo.');
     } finally {
       setActionLoading(false);
     }
   };
 
-
-  // Función para abrir el modal de edición
-  const handleEditProductModal = (product) => {
-    setProductToEdit(product);
-    setShowEditModal(true);
-  };
 
   // Eliminar producto - compatible con ComprasView
   const handleDeleteProduct = async (id) => {
@@ -351,18 +337,6 @@ const WishlistApp = ({ user }) => {
     setShowAddForm(false);
   };
 
-  // Cerrar modal del calendario
-  const closeCalendarModal = () => {
-    setShowCalendarModal(false);
-    setSelectedDate(null);
-    setSelectedDateProducts({ purchased: [], target: [] });
-  };
-
-  const closeEditModal = () => {
-    setShowEditModal(false);
-    setProductToEdit(null);
-  };
-
   const handleSaveEdit = async (updatedProduct) => {
     try {
       setActionLoading(true);
@@ -409,9 +383,6 @@ const WishlistApp = ({ user }) => {
           : p
       ));
 
-      // Cerrar el modal después de guardar
-      closeEditModal();
-
       loadingSwal.close();
       showSuccess('¡Producto actualizado!', 'Los cambios se han guardado exitosamente');
 
@@ -457,7 +428,7 @@ const WishlistApp = ({ user }) => {
       {!sidebarVisible && (
         <button
           onClick={() => {
-            console.log('Click en botón toggle desktop');
+            
             setSidebarVisible(true);
           }}
           className="hidden md:flex fixed top-6 right-6 z-40 w-12 h-12 items-center justify-center bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-full shadow-lg hover:shadow-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200"
@@ -471,7 +442,7 @@ const WishlistApp = ({ user }) => {
       <div className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3 md:hidden">
         <button
           onClick={() => {
-            console.log('Click en botón móvil');
+            
             toggleSidebar();
           }}
           className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 btn-animate header-toggle"
@@ -523,14 +494,13 @@ const WishlistApp = ({ user }) => {
             <ComprasView
               products={products}
               onAddProduct={handleAddProduct}
-              onEditProduct={handleEditProductModal}
+              onSaveProduct={handleSaveEdit}
               onDeleteProduct={handleDeleteProduct}
               onToggleStatus={handleToggleStatus}
               newProduct={newProduct}
               setNewProduct={setNewProduct}
               showAddForm={showAddForm}
               setShowAddForm={setShowAddForm}
-              editingProduct={editingProduct}
               resetForm={resetForm}
             />
           ) : activeTab === 'calendario' ? (
@@ -542,21 +512,6 @@ const WishlistApp = ({ user }) => {
           )}
         </div>
       </div>
-
-      {/* Modales globales */}
-      <CalendarModal
-        isOpen={showCalendarModal}
-        onClose={closeCalendarModal}
-        selectedDate={selectedDate}
-        products={selectedDateProducts}
-      />
-
-      <EditProductModal
-        isOpen={showEditModal}
-        onClose={closeEditModal}
-        product={productToEdit}
-        onSave={handleSaveEdit}
-      />
     </div>
   );
 };

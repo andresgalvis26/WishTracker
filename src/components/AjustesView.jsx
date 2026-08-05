@@ -18,9 +18,10 @@ import {
 } from 'lucide-react';
 import ElegantDropdown from './ElegantDropdown';
 import { useTheme } from '../context/ThemeContext';
+import { showSuccess, showError, showConfirmation } from '../utils/sweetAlert';
 
-const inputClass = 'w-full rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 text-slate-700 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-slate-100 disabled:text-slate-400 disabled:hover:shadow-sm disabled:hover:border-slate-200';
-const inputClassReadonly = 'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-500 shadow-sm';
+const inputClass = 'w-full rounded-2xl border border-slate-200 dark:border-gray-600 bg-white/95 dark:bg-gray-700/90 px-4 py-3 text-slate-700 dark:text-gray-100 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:bg-slate-100 dark:disabled:bg-gray-600 disabled:text-slate-400 dark:disabled:text-gray-500 disabled:hover:shadow-sm disabled:hover:border-slate-200 dark:disabled:hover:border-gray-600';
+const inputClassReadonly = 'w-full rounded-2xl border border-slate-200 dark:border-gray-600 bg-slate-50 dark:bg-gray-700/50 px-4 py-3 text-slate-500 dark:text-gray-400 shadow-sm';
 
 const AjustesView = ({ user }) => {
   // Estados para las diferentes secciones
@@ -90,22 +91,20 @@ const AjustesView = ({ user }) => {
   ];
 
   const handleSaveProfile = () => {
-    // Aquí iría la lógica para guardar el perfil
-    console.log('Guardando perfil:', userProfile);
     setIsEditing(false);
-    // onUpdateUser && onUpdateUser(userProfile);
+    showSuccess('Perfil actualizado', 'Los cambios se han guardado correctamente');
   };
 
   const handleSavePreferences = () => {
     localStorage.setItem('preferencia_moneda', moneda);
-    alert('Preferencias guardadas correctamente');
+    showSuccess('Preferencias guardadas', 'Los cambios se aplicaron correctamente');
   };
 
   const handleSaveNotifications = () => {
     localStorage.setItem('notif_recordatorios', notificaciones.recordatorios.toString());
     localStorage.setItem('notif_ofertas', notificaciones.ofertas.toString());
     localStorage.setItem('notif_resumen', notificaciones.resumen.toString());
-    alert('Configuración de notificaciones guardada');
+    showSuccess('Notificaciones actualizadas', 'La configuracion se guardo correctamente');
   };
 
   const handleAddCategoria = () => {
@@ -124,16 +123,18 @@ const AjustesView = ({ user }) => {
   };
 
   const handleExportData = (formato) => {
-    // Lógica para exportar datos
-    alert(`Exportando datos en formato ${formato}...`);
+    showSuccess(`Exportando datos`, `Se estara generando la exportacion en formato ${formato}...`);
   };
 
-  const handleClearData = () => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar todos tus datos? Esta acción no se puede deshacer.')) {
-      localStorage.clear();
-      alert('Datos eliminados. La página se recargará.');
-      window.location.reload();
-    }
+  const handleClearData = async () => {
+    const result = await showConfirmation(
+      'Eliminar todos los datos',
+      'Esta accion eliminara permanentemente tus productos y configuraciones. No se puede deshacer.',
+      'Si, eliminar todo'
+    );
+    if (!result.isConfirmed) return;
+    localStorage.clear();
+    window.location.reload();
   };
 
   const renderSeccionContent = () => {

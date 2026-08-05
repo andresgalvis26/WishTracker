@@ -1,4 +1,4 @@
-/**
+﻿/**
  * COMPONENTE LOGIN MODERNO - WISHTRACKER
  * 
  * Componente de autenticación con diseño moderno que incluye:
@@ -10,9 +10,9 @@
  * - Diseño responsivo
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import supabase from '../supebase';
+import supabase from '../supabase';
 import { 
   Eye, 
   EyeOff, 
@@ -39,7 +39,15 @@ const Login = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
-    const [messageType, setMessageType] = useState('error'); // 'error' | 'success' | 'info'
+    const [messageType, setMessageType] = useState('error');
+    const timerRef = useRef(null);
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, []);
 
     // Estados para validación
     const [emailError, setEmailError] = useState('');
@@ -113,7 +121,7 @@ const Login = () => {
                     setMessage('¡Cuenta creada exitosamente! Revisa tu email para confirmar.');
                     setMessageType('success');
                     // Cambiar a modo login después de 2 segundos
-                    setTimeout(() => {
+                    timerRef.current = setTimeout(() => {
                         setIsRegister(false);
                         setMessage('');
                     }, 2000);

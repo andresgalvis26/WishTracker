@@ -47,11 +47,11 @@ const ElegantDropdown = ({
                 onClick={() => setIsOpen((prev) => !prev)}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
-                className={`flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 px-4 py-3 text-sm md:text-base text-slate-700 dark:text-gray-300 shadow-sm transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${triggerClassName}`}
+                className={`flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-gray-600 bg-white/95 dark:bg-gray-700/90 px-4 py-3 text-sm md:text-base text-slate-700 dark:text-gray-100 shadow-sm transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-500 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 ${triggerClassName}`}
             >
                 <span className="flex min-w-0 items-center gap-2 truncate">
                     {selectedOption?.icon && <span className="text-base leading-none">{selectedOption.icon}</span>}
-                    <span className={`truncate ${selectedOption?.isPlaceholder ? 'text-slate-400 dark:text-gray-500' : 'text-slate-700 dark:text-gray-300'}`}>
+                    <span className={`truncate ${selectedOption?.isPlaceholder ? 'text-slate-400 dark:text-gray-500' : 'text-slate-700 dark:text-gray-100'}`}>
                         {buttonLabel}
                     </span>
                 </span>
@@ -61,7 +61,7 @@ const ElegantDropdown = ({
             {isOpen && (
                 <div
                     role="listbox"
-                    className={`absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-2xl border border-slate-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 shadow-2xl backdrop-blur ${menuClassName}`}
+                    className={`absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-2xl border border-slate-200 dark:border-gray-600 bg-white/95 dark:bg-gray-700/95 shadow-2xl backdrop-blur ${menuClassName}`}
                 >
                     <div className="max-h-72 overflow-y-auto py-2">
                         {options.map((option) => {

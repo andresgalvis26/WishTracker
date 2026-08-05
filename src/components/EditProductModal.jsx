@@ -4,12 +4,12 @@ import CustomDatePicker from './CustomDatePicker';
 import ElegantDropdown from './ElegantDropdown';
 
 const inputClass = (hasError = false) => `
-  w-full rounded-2xl border px-4 py-3 text-slate-700 dark:text-gray-300 shadow-sm transition-all duration-200
-  bg-white/95 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-  ${hasError ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 dark:border-gray-700'}
+  w-full rounded-2xl border px-4 py-3 text-slate-700 dark:text-gray-100 shadow-sm transition-all duration-200
+  bg-white/95 dark:bg-gray-700/95 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900
+  ${hasError ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 dark:border-gray-600'}
 `;
 
-const textareaClass = 'w-full rounded-2xl border border-slate-200 dark:border-gray-700 bg-white/95 px-4 py-3 text-slate-700 dark:text-gray-300 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 resize-none';
+const textareaClass = 'w-full rounded-2xl border border-slate-200 dark:border-gray-600 bg-white/95 dark:bg-gray-700/95 px-4 py-3 text-slate-700 dark:text-gray-100 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 resize-none';
 
 const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
   const [formData, setFormData] = useState({
@@ -382,7 +382,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                     </div>
                     {formData.receiptUrl && (
                       <a
-                        href={formData.receiptPath || formData.receiptUrl}
+                        href={formData.receiptUrl}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-gray-400 transition-colors hover:bg-slate-200"

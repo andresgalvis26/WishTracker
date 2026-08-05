@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CONTEXTO DE AUTENTICACIÓN PARA WISHTRACKER
  * 
  * Este archivo maneja todo el sistema de autenticación de la aplicación.
@@ -13,7 +13,7 @@
  */
 
 import { createContext, useContext, useEffect, useState } from "react";
-import supabase from "../supebase";
+import supabase from "../supabase";
 
 // Crear el contexto de autenticación
 // Este contexto permitirá que cualquier componente acceda al estado de autenticación

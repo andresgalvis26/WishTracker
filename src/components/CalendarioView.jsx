@@ -1,37 +1,27 @@
-import React, { useState } from 'react';
-import { Calendar, CalendarCheck, CheckCircle2, Clock3, Target } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { Calendar, CalendarCheck, CheckCircle2, Clock3 } from 'lucide-react';
 import ProductCalendar from './ProductCalendar';
 import CalendarModal from './CalendarModal';
 
 const CalendarioView = ({ products }) => {
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedDateProducts, setSelectedDateProducts] = useState({ purchased: [], target: [] });
+  const [selectedDateProducts, setSelectedDateProducts] = useState([]);
 
   const handleDateClick = (date, productsForDate) => {
     setSelectedDate(date);
-    setSelectedDateProducts(productsForDate);
+    setSelectedDateProducts(productsForDate || []);
     setShowCalendarModal(true);
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0
-    }).format(amount || 0);
   };
 
   const closeCalendarModal = () => {
     setShowCalendarModal(false);
     setSelectedDate(null);
-    setSelectedDateProducts({ purchased: [], target: [] });
+    setSelectedDateProducts([]);
   };
 
   const today = new Date();
-  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const totalPurchased = products.filter(product => product.purchaseDate).length;
-  const totalTarget = products.filter(product => product.targetDate).length;
   const purchasedThisMonth = products.filter(product => {
     if (!product.purchaseDate) return false;
     const purchaseDate = new Date(product.purchaseDate);
@@ -39,52 +29,50 @@ const CalendarioView = ({ products }) => {
       purchaseDate.getFullYear() === today.getFullYear();
   }).length;
 
-  const upcomingTargets = products
-    .filter(product => product.targetDate && new Date(product.targetDate) >= todayStart)
-    .sort((a, b) => new Date(a.targetDate) - new Date(b.targetDate))
-    .slice(0, 4);
+  const purchasedLastMonth = products.filter(product => {
+    if (!product.purchaseDate) return false;
+    const purchaseDate = new Date(product.purchaseDate);
+    const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
+    const lastMonthYear = today.getMonth() === 0 ? today.getFullYear() - 1 : today.getFullYear();
+    return purchaseDate.getMonth() === lastMonth &&
+      purchaseDate.getFullYear() === lastMonthYear;
+  }).length;
 
   const stats = [
     {
-      label: 'Con fechas',
-      value: totalPurchased + totalTarget,
+      label: 'Total compras',
+      value: totalPurchased,
       icon: CalendarCheck,
       tone: 'bg-slate-900 text-white'
-    },
-    {
-      label: 'Comprados',
-      value: totalPurchased,
-      icon: CheckCircle2,
-      tone: 'bg-emerald-50 dark:bg-emerald-900/300 text-white'
-    },
-    {
-      label: 'Planificados',
-      value: totalTarget,
-      icon: Target,
-      tone: 'bg-blue-50 dark:bg-blue-900/300 text-white'
     },
     {
       label: 'Este mes',
       value: purchasedThisMonth,
       icon: Clock3,
       tone: 'bg-purple-500 text-white'
+    },
+    {
+      label: 'Mes pasado',
+      value: purchasedLastMonth,
+      icon: CheckCircle2,
+      tone: 'bg-emerald-500 text-white'
     }
   ];
 
   return (
-    <div className="flex h-full flex-col bg-slate-50 dark:bg-gray-800 dark:bg-gray-900 transition-colors duration-300">
-      <div className="flex-shrink-0 border-b border-slate-200 dark:border-gray-700 dark:border-gray-800 bg-white dark:bg-gray-900 dark:bg-gray-900 px-4 py-5 sm:px-6">
+    <div className="flex h-full flex-col bg-slate-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="flex-shrink-0 border-b border-slate-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-5 sm:px-6">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-600">Calendario</p>
               <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-gray-100 sm:text-3xl">Calendario de compras</h2>
               <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-gray-400">
-                Visualiza compras realizadas y fechas objetivo en una sola vista mensual.
+                Visualiza tus compras realizadas organizadas por fecha.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:min-w-[560px]">
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-3 xl:min-w-[420px]">
               {stats.map(item => {
                 const Icon = item.icon;
 
@@ -116,61 +104,11 @@ const CalendarioView = ({ products }) => {
               </div>
               <h3 className="text-lg font-semibold text-slate-700 dark:text-gray-300">No hay productos para mostrar</h3>
               <p className="mt-2 max-w-sm text-sm text-slate-500 dark:text-gray-400">
-                Agrega productos con fechas para verlos organizados en el calendario.
+                Agrega productos y registra la fecha de compra para verlos aqui.
               </p>
             </div>
           ) : (
-            <>
-              <ProductCalendar products={products} onDateClick={handleDateClick} />
-
-              <div className="rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm sm:p-6">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Resumen</p>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-gray-100">Actividad del calendario</h3>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
-                    <span className="rounded-full bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 text-emerald-700 ring-1 ring-emerald-100">Compras: {totalPurchased}</span>
-                    <span className="rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 text-blue-700 ring-1 ring-blue-100">Objetivos: {totalTarget}</span>
-                  </div>
-                </div>
-
-                {upcomingTargets.length > 0 ? (
-                  <div className="mt-5 grid gap-3 lg:grid-cols-2">
-                    {upcomingTargets.map(product => {
-                      const targetDate = new Date(product.targetDate);
-                      const daysLeft = Math.ceil((targetDate.setHours(0, 0, 0, 0) - todayStart.getTime()) / (1000 * 60 * 60 * 24));
-
-                      return (
-                        <div key={product.id} className="rounded-2xl border border-slate-100 dark:border-gray-700 bg-slate-50 dark:bg-gray-800 p-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="min-w-0">
-                              <p className="truncate font-semibold text-slate-900 dark:text-gray-100">{product.name}</p>
-                              <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                                {product.category || 'Sin categoria'} - {formatCurrency(product.price)}
-                              </p>
-                            </div>
-                            <div className="shrink-0 text-right">
-                              <p className="text-sm font-bold text-blue-600">
-                                {new Date(product.targetDate).toLocaleDateString('es-ES', {
-                                  day: 'numeric',
-                                  month: 'short'
-                                })}
-                              </p>
-                              <p className="text-xs text-slate-500 dark:text-gray-400">{daysLeft} dia{daysLeft === 1 ? '' : 's'}</p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="mt-5 rounded-2xl border border-dashed border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-800 px-4 py-6 text-sm text-slate-500 dark:text-gray-400">
-                    No hay compras planificadas proximas.
-                  </div>
-                )}
-              </div>
-            </>
+            <ProductCalendar products={products} onDateClick={handleDateClick} />
           )}
 
           <CalendarModal

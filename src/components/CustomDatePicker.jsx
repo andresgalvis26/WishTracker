@@ -32,11 +32,11 @@ const CustomDatePicker = ({
         placeholder={placeholder}
         readOnly
         disabled={disabled}
-        className={`w-full pl-12 pr-4 py-3 border rounded-2xl text-gray-700 dark:text-gray-300 placeholder-slate-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 cursor-pointer ${
+        className={`w-full pl-12 pr-4 py-3 border rounded-2xl text-gray-700 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 cursor-pointer ${
           error 
             ? 'border-red-400 focus:ring-red-400/50 focus:ring-offset-red-50' 
-            : 'border-slate-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 focus:ring-purple-500 focus:border-purple-300 dark:focus:border-purple-600 hover:border-purple-300 dark:hover:border-purple-600 hover:shadow-md'
-        } ${disabled ? 'bg-gray-50 dark:bg-gray-700 cursor-not-allowed text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-600' : ''} ${className}`}
+            : 'border-slate-200 dark:border-gray-600 bg-white/95 dark:bg-gray-700/90 focus:ring-purple-500 focus:border-purple-300 dark:focus:border-purple-600 hover:border-purple-300 dark:hover:border-purple-500 hover:shadow-md'
+        } ${disabled ? 'bg-gray-50 dark:bg-gray-600 cursor-not-allowed text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-600' : ''} ${className}`}
       />
       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
         {type === 'purchase' ? (

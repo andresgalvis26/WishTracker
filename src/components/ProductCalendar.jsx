@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Calendar, CheckCircle2, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import { Calendar, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ProductCalendar = ({ products, onDateClick }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -21,14 +21,8 @@ const ProductCalendar = ({ products, onDateClick }) => {
     products.forEach(product => {
       if (product.purchaseDate) {
         const dateKey = new Date(product.purchaseDate).toDateString();
-        if (!dateMap[dateKey]) dateMap[dateKey] = { purchased: [], target: [] };
-        dateMap[dateKey].purchased.push(product);
-      }
-
-      if (product.targetDate) {
-        const dateKey = new Date(product.targetDate).toDateString();
-        if (!dateMap[dateKey]) dateMap[dateKey] = { purchased: [], target: [] };
-        dateMap[dateKey].target.push(product);
+        if (!dateMap[dateKey]) dateMap[dateKey] = [];
+        dateMap[dateKey].push(product);
       }
     });
 
@@ -57,21 +51,20 @@ const ProductCalendar = ({ products, onDateClick }) => {
     for (let day = 1; day <= daysInMonth; day += 1) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
       const dateKey = date.toDateString();
-      const dayData = productsByDate[dateKey];
+      const dayProducts = productsByDate[dateKey] || [];
       const isToday = date.toDateString() === new Date().toDateString();
 
       days.push({
         day,
         date,
         isToday,
-        products: dayData || { purchased: [], target: [] }
+        products: dayProducts
       });
     }
 
     return days;
   }, [currentDate, daysInMonth, firstDayWeekday, productsByDate]);
 
-  const scheduledCount = products.filter(product => product.targetDate).length;
   const purchasedCount = products.filter(product => product.purchaseDate).length;
 
   return (
@@ -119,7 +112,7 @@ const ProductCalendar = ({ products, onDateClick }) => {
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5">
           <div className="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/10">
             <CheckCircle2 className="h-5 w-5 text-emerald-300" />
             <div>
@@ -127,25 +120,14 @@ const ProductCalendar = ({ products, onDateClick }) => {
               <p className="text-xs text-white/60">Productos comprados</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/10">
-            <Target className="h-5 w-5 text-cyan-300" />
-            <div>
-              <p className="text-lg font-semibold leading-none">{scheduledCount}</p>
-              <p className="text-xs text-white/60">Fechas objetivo</p>
-            </div>
-          </div>
         </div>
       </div>
 
       <div className="px-4 py-5 sm:px-6">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-100">
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 font-medium text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-800">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
             Productos comprados
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 font-medium text-blue-700 dark:text-blue-400 ring-1 ring-blue-100">
-            <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-            Fecha objetivo
           </div>
         </div>
 
@@ -164,9 +146,7 @@ const ProductCalendar = ({ products, onDateClick }) => {
             }
 
             const { day, date, isToday, products: dayProducts } = dayData;
-            const hasPurchased = dayProducts.purchased.length > 0;
-            const hasTarget = dayProducts.target.length > 0;
-            const hasEvents = hasPurchased || hasTarget;
+            const hasProducts = dayProducts.length > 0;
 
             return (
               <button
@@ -175,8 +155,8 @@ const ProductCalendar = ({ products, onDateClick }) => {
                 onClick={() => onDateClick && onDateClick(date, dayProducts)}
                 className={`
                   min-h-20 rounded-2xl border p-2 text-left transition-all duration-200 sm:min-h-28 sm:p-3
-                  ${isToday ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-300' : 'border-slate-100 dark:border-gray-700 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-slate-200 dark:hover:border-gray-600 hover:bg-slate-50 dark:hover:bg-gray-700'}
-                  ${hasEvents ? 'hover:-translate-y-0.5 hover:shadow-md' : ''}
+                  ${isToday ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-300' : 'border-slate-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-slate-200 dark:hover:border-gray-600 hover:bg-slate-50 dark:hover:bg-gray-700'}
+                  ${hasProducts ? 'hover:-translate-y-0.5 hover:shadow-md' : ''}
                 `}
               >
                 <div className="flex h-full flex-col">
@@ -184,38 +164,26 @@ const ProductCalendar = ({ products, onDateClick }) => {
                     <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${isToday ? 'bg-white text-slate-900' : 'text-slate-700 dark:text-gray-300'}`}>
                       {day}
                     </span>
-                    {hasEvents && (
+                    {hasProducts && (
                       <span className={`text-[10px] font-semibold ${isToday ? 'text-white/60' : 'text-slate-400 dark:text-gray-500'}`}>
-                        {dayProducts.purchased.length + dayProducts.target.length}
+                        {dayProducts.length}
                       </span>
                     )}
                   </div>
 
                   <div className="mt-auto space-y-1 pt-2">
-                    {hasPurchased && (
-                      <div className={`flex items-center gap-1 rounded-full px-2 py-1 ${isToday ? 'bg-emerald-400/20 text-emerald-100' : 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 dark:text-emerald-400'}`}>
+                    {hasProducts && (
+                      <div className={`flex items-center gap-1 rounded-full px-2 py-1 ${isToday ? 'bg-emerald-400/20 text-emerald-100' : 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'}`}>
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        <span className="text-[11px] font-semibold">{dayProducts.purchased.length}</span>
-                      </div>
-                    )}
-
-                    {hasTarget && (
-                      <div className={`flex items-center gap-1 rounded-full px-2 py-1 ${isToday ? 'bg-blue-400/20 text-blue-100' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 dark:text-blue-400'}`}>
-                        <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                        <span className="text-[11px] font-semibold">{dayProducts.target.length}</span>
+                        <span className="text-[11px] font-semibold">{dayProducts.length}</span>
                       </div>
                     )}
                   </div>
 
-                  {hasEvents && (
+                  {hasProducts && (
                     <div className="mt-2 hidden space-y-1 sm:block">
-                      {dayProducts.purchased.slice(0, 1).map(product => (
+                      {dayProducts.slice(0, 2).map(product => (
                         <div key={product.id} className={`truncate text-xs font-medium ${isToday ? 'text-emerald-100' : 'text-emerald-700 dark:text-emerald-400'}`}>
-                          {product.name}
-                        </div>
-                      ))}
-                      {dayProducts.target.slice(0, 1).map(product => (
-                        <div key={product.id} className={`truncate text-xs font-medium ${isToday ? 'text-blue-100' : 'text-blue-700 dark:text-blue-400'}`}>
                           {product.name}
                         </div>
                       ))}

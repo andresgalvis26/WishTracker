@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
 	BarChart3,
 	Calendar,
@@ -12,13 +12,9 @@ import {
 	Wallet,
 	Zap,
 } from 'lucide-react';
+import { formatCurrency } from '../utils/formatCurrency';
 
-const formatCurrency = (value) =>
-	new Intl.NumberFormat('es-ES', {
-		style: 'currency',
-		currency: 'COP',
-		maximumFractionDigits: 0,
-	}).format(value || 0);
+
 
 const formatShortDate = (date) =>
 	new Intl.DateTimeFormat('es-ES', {
