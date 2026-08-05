@@ -140,7 +140,7 @@ const Dashboard = ({ user, products = [] }) => {
 
 							<div className="space-y-2">
 								<h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-									Bienvenido{user?.email ? `, ${user.email}` : ''}
+									Bienvenido{user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : user?.email ? `, ${user.email}` : ''}
 								</h1>
 								<p className="max-w-2xl text-sm leading-6 text-white/75 sm:text-base">
 									Este panel resume la actividad de tu lista de deseos, tus compras pendientes

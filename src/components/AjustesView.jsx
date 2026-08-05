@@ -19,6 +19,7 @@ import {
 import ElegantDropdown from './ElegantDropdown';
 import { useTheme } from '../context/ThemeContext';
 import { showSuccess, showError, showConfirmation } from '../utils/sweetAlert';
+import supabase from '../supabase';
 
 const inputClass = 'w-full rounded-2xl border border-slate-200 dark:border-gray-600 bg-white/95 dark:bg-gray-700/90 px-4 py-3 text-slate-700 dark:text-gray-100 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:bg-slate-100 dark:disabled:bg-gray-600 disabled:text-slate-400 dark:disabled:text-gray-500 disabled:hover:shadow-sm disabled:hover:border-slate-200 dark:disabled:hover:border-gray-600';
 const inputClassReadonly = 'w-full rounded-2xl border border-slate-200 dark:border-gray-600 bg-slate-50 dark:bg-gray-700/50 px-4 py-3 text-slate-500 dark:text-gray-400 shadow-sm';
@@ -29,10 +30,9 @@ const AjustesView = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [userProfile, setUserProfile] = useState({
-    nombre: user?.user_metadata?.nombre || '',
+    displayName: user?.user_metadata?.display_name || '',
     email: user?.email || '',
-    telefono: user?.user_metadata?.telefono || '',
-    avatar: user?.user_metadata?.avatar || null
+    telefono: user?.user_metadata?.telefono || ''
   });
 
   // Estados para configuraciones
@@ -90,9 +90,22 @@ const AjustesView = ({ user }) => {
     }
   ];
 
-  const handleSaveProfile = () => {
-    setIsEditing(false);
-    showSuccess('Perfil actualizado', 'Los cambios se han guardado correctamente');
+  const handleSaveProfile = async () => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          display_name: userProfile.displayName.trim(),
+          telefono: userProfile.telefono.trim()
+        }
+      });
+
+      if (error) throw error;
+
+      setIsEditing(false);
+      showSuccess('Perfil actualizado', 'Los cambios se han guardado correctamente');
+    } catch (err) {
+      showError('Error al guardar', 'No se pudo actualizar el perfil. Intenta de nuevo.');
+    }
   };
 
   const handleSavePreferences = () => {
@@ -143,7 +156,7 @@ const AjustesView = ({ user }) => {
         return (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Información Personal</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Información Personal</h3>
               <button
                 onClick={() => setIsEditing(!isEditing)}
                 className="flex items-center gap-2 px-4 py-2 text-blue-600 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 transition-colors"
@@ -160,8 +173,8 @@ const AjustesView = ({ user }) => {
                 </label>
                 <input
                   type="text"
-                  value={userProfile.nombre}
-                  onChange={(e) => setUserProfile({...userProfile, nombre: e.target.value})}
+                  value={userProfile.displayName}
+                  onChange={(e) => setUserProfile({...userProfile, displayName: e.target.value})}
                   disabled={!isEditing}
                     className={inputClass}
                   placeholder="Tu nombre completo"

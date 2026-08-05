@@ -34,6 +34,7 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [isRegister, setIsRegister] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -106,12 +107,21 @@ const Login = () => {
             return;
         }
 
+        if (isRegister && !displayName.trim()) {
+            setMessage('Por favor ingresa tu nombre');
+            setMessageType('error');
+            setLoading(false);
+            return;
+        }
+
         try {
             if (isRegister) {
-                // Registro de nuevo usuario
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
+                    options: {
+                        data: { display_name: displayName.trim() }
+                    }
                 });
                 
                 if (error) {
@@ -169,6 +179,7 @@ const Login = () => {
         setMessage('');
         setPassword('');
         setConfirmPassword('');
+        setDisplayName('');
         setShowPassword(false);
         setShowConfirmPassword(false);
     };
@@ -242,6 +253,22 @@ const Login = () => {
 
                         {/* Formulario */}
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* Campo Nombre (solo registro) */}
+                            {isRegister && (
+                                <div className="space-y-1">
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre completo"
+                                            value={displayName}
+                                            onChange={(e) => setDisplayName(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-300"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Campo Email */}
                             <div className="space-y-1">
                                 <div className="relative">
