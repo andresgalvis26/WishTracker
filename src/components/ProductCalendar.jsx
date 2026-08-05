@@ -75,8 +75,8 @@ const ProductCalendar = ({ products, onDateClick }) => {
   const purchasedCount = products.filter(product => product.purchaseDate).length;
 
   return (
-    <div className="mb-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60">
-      <div className="border-b border-slate-100 bg-gradient-to-r from-slate-900 via-purple-900 to-blue-900 px-5 py-5 text-white sm:px-6">
+    <div className="mb-8 overflow-hidden rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl shadow-slate-200/60 dark:shadow-gray-900/60">
+      <div className="border-b border-slate-100 dark:border-gray-700 bg-gradient-to-r from-slate-900 via-purple-900 to-blue-900 px-5 py-5 text-white sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15">
@@ -139,11 +139,11 @@ const ProductCalendar = ({ products, onDateClick }) => {
 
       <div className="px-4 py-5 sm:px-6">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700 ring-1 ring-emerald-100">
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-100">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
             Productos comprados
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 font-medium text-blue-700 ring-1 ring-blue-100">
+          <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 font-medium text-blue-700 dark:text-blue-400 ring-1 ring-blue-100">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
             Fecha objetivo
           </div>
@@ -151,7 +151,7 @@ const ProductCalendar = ({ products, onDateClick }) => {
 
         <div className="mb-2 grid grid-cols-7 gap-2">
           {dayNames.map(day => (
-            <div key={day} className="px-1 py-2 text-center text-xs font-bold uppercase tracking-wide text-slate-400 sm:text-sm">
+            <div key={day} className="px-1 py-2 text-center text-xs font-bold uppercase tracking-wide text-slate-400 dark:text-gray-500 sm:text-sm">
               {day}
             </div>
           ))}
@@ -160,7 +160,7 @@ const ProductCalendar = ({ products, onDateClick }) => {
         <div className="grid grid-cols-7 gap-2">
           {calendarDays.map((dayData, index) => {
             if (!dayData) {
-              return <div key={index} className="min-h-20 rounded-2xl bg-slate-50/70 sm:min-h-28" />;
+              return <div key={index} className="min-h-20 rounded-2xl bg-slate-50/70 dark:bg-gray-800/70 sm:min-h-28" />;
             }
 
             const { day, date, isToday, products: dayProducts } = dayData;
@@ -175,17 +175,17 @@ const ProductCalendar = ({ products, onDateClick }) => {
                 onClick={() => onDateClick && onDateClick(date, dayProducts)}
                 className={`
                   min-h-20 rounded-2xl border p-2 text-left transition-all duration-200 sm:min-h-28 sm:p-3
-                  ${isToday ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-300' : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50'}
+                  ${isToday ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-300' : 'border-slate-100 dark:border-gray-700 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-slate-200 dark:hover:border-gray-600 hover:bg-slate-50 dark:hover:bg-gray-700'}
                   ${hasEvents ? 'hover:-translate-y-0.5 hover:shadow-md' : ''}
                 `}
               >
                 <div className="flex h-full flex-col">
                   <div className="flex items-start justify-between gap-1">
-                    <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${isToday ? 'bg-white text-slate-900' : 'text-slate-700'}`}>
+                    <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${isToday ? 'bg-white text-slate-900' : 'text-slate-700 dark:text-gray-300'}`}>
                       {day}
                     </span>
                     {hasEvents && (
-                      <span className={`text-[10px] font-semibold ${isToday ? 'text-white/60' : 'text-slate-400'}`}>
+                      <span className={`text-[10px] font-semibold ${isToday ? 'text-white/60' : 'text-slate-400 dark:text-gray-500'}`}>
                         {dayProducts.purchased.length + dayProducts.target.length}
                       </span>
                     )}
@@ -193,14 +193,14 @@ const ProductCalendar = ({ products, onDateClick }) => {
 
                   <div className="mt-auto space-y-1 pt-2">
                     {hasPurchased && (
-                      <div className={`flex items-center gap-1 rounded-full px-2 py-1 ${isToday ? 'bg-emerald-400/20 text-emerald-100' : 'bg-emerald-50 text-emerald-700'}`}>
+                      <div className={`flex items-center gap-1 rounded-full px-2 py-1 ${isToday ? 'bg-emerald-400/20 text-emerald-100' : 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 dark:text-emerald-400'}`}>
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                         <span className="text-[11px] font-semibold">{dayProducts.purchased.length}</span>
                       </div>
                     )}
 
                     {hasTarget && (
-                      <div className={`flex items-center gap-1 rounded-full px-2 py-1 ${isToday ? 'bg-blue-400/20 text-blue-100' : 'bg-blue-50 text-blue-700'}`}>
+                      <div className={`flex items-center gap-1 rounded-full px-2 py-1 ${isToday ? 'bg-blue-400/20 text-blue-100' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 dark:text-blue-400'}`}>
                         <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
                         <span className="text-[11px] font-semibold">{dayProducts.target.length}</span>
                       </div>
@@ -210,12 +210,12 @@ const ProductCalendar = ({ products, onDateClick }) => {
                   {hasEvents && (
                     <div className="mt-2 hidden space-y-1 sm:block">
                       {dayProducts.purchased.slice(0, 1).map(product => (
-                        <div key={product.id} className={`truncate text-xs font-medium ${isToday ? 'text-emerald-100' : 'text-emerald-700'}`}>
+                        <div key={product.id} className={`truncate text-xs font-medium ${isToday ? 'text-emerald-100' : 'text-emerald-700 dark:text-emerald-400'}`}>
                           {product.name}
                         </div>
                       ))}
                       {dayProducts.target.slice(0, 1).map(product => (
-                        <div key={product.id} className={`truncate text-xs font-medium ${isToday ? 'text-blue-100' : 'text-blue-700'}`}>
+                        <div key={product.id} className={`truncate text-xs font-medium ${isToday ? 'text-blue-100' : 'text-blue-700 dark:text-blue-400'}`}>
                           {product.name}
                         </div>
                       ))}

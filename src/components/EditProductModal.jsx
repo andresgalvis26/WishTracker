@@ -4,12 +4,12 @@ import CustomDatePicker from './CustomDatePicker';
 import ElegantDropdown from './ElegantDropdown';
 
 const inputClass = (hasError = false) => `
-  w-full rounded-2xl border px-4 py-3 text-slate-700 shadow-sm transition-all duration-200
+  w-full rounded-2xl border px-4 py-3 text-slate-700 dark:text-gray-300 shadow-sm transition-all duration-200
   bg-white/95 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-  ${hasError ? 'border-red-300 focus:ring-red-500' : 'border-slate-200'}
+  ${hasError ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 dark:border-gray-700'}
 `;
 
-const textareaClass = 'w-full rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 text-slate-700 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 resize-none';
+const textareaClass = 'w-full rounded-2xl border border-slate-200 dark:border-gray-700 bg-white/95 px-4 py-3 text-slate-700 dark:text-gray-300 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 resize-none';
 
 const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
   const [formData, setFormData] = useState({
@@ -162,16 +162,16 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto overscroll-contain" onWheel={(e) => e.stopPropagation()}>
-      <div className="w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl" onWheel={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-2xl" onWheel={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30">
           <div className="flex items-center gap-3">
             <Package2 className="w-6 h-6 text-purple-600" />
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                 {isAddMode ? 'Agregar Producto' : 'Editar Producto'}
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 {isAddMode ? 'Crea un nuevo producto en tu lista' : 'Modifica la información del producto'}
               </p>
             </div>
@@ -179,7 +179,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors shadow-sm disabled:opacity-50"
+            className="p-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
@@ -197,7 +197,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
 
             {/* Nombre del producto */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Package2 className="w-4 h-4" />
                 Nombre del producto *
               </label>
@@ -215,7 +215,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
             {/* Categoría y Precio */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <Tag className="w-4 h-4" />
                   Categoría
                 </label>
@@ -231,7 +231,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <DollarSign className="w-4 h-4" />
                   Precio *
                 </label>
@@ -250,7 +250,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
 
             {/* Prioridad */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 <Star className="w-4 h-4" />
                 Prioridad
               </label>
@@ -265,7 +265,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                       p-3 rounded-xl border-2 transition-all text-sm font-medium
                       ${formData.priority === priority.value
                         ? `border-purple-300 ${priority.bg} ${priority.color} shadow-sm`
-                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                        : 'border-gray-200 dark:border-gray-700 bg-white text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800'
                       }
                       disabled:opacity-50
                     `}
@@ -278,7 +278,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
 
             {/* Tienda */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <MapPin className="w-4 h-4" />
                 Tienda (Opcional)
               </label>
@@ -295,7 +295,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
             {/* Fechas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <Target className="w-4 h-4" />
                   Fecha objetivo
                 </label>
@@ -309,7 +309,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   <Calendar className="w-4 h-4" />
                   Fecha de compra
                 </label>
@@ -325,7 +325,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
 
             {/* Comprobante */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Paperclip className="w-4 h-4" />
                 Comprobante de compra
               </label>
@@ -347,20 +347,20 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                 className={`rounded-2xl border border-dashed p-4 transition-all ${
                   isDraggingReceipt
                     ? 'border-purple-500 bg-purple-50 shadow-md shadow-purple-100'
-                    : 'border-slate-300 bg-slate-50/80 hover:border-purple-300 hover:bg-purple-50/50'
+                    : 'border-slate-300 dark:border-gray-600 bg-slate-50/80 dark:bg-gray-800/80 hover:border-purple-300 hover:bg-purple-50/50'
                 }`}
               >
                 <label className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl bg-white px-4 py-5 text-center shadow-sm">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-100 text-purple-600">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
                     <Upload className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-700">
+                    <p className="text-sm font-semibold text-slate-700 dark:text-gray-300">
                       {isDraggingReceipt
                         ? 'Suelta el comprobante aqui'
                         : formData.receiptFile?.name || formData.receiptName || 'Adjuntar comprobante'}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">Arrastra un archivo o haz clic para seleccionar. PDF, JPG, PNG o WebP</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-gray-400">Arrastra un archivo o haz clic para seleccionar. PDF, JPG, PNG o WebP</p>
                   </div>
                   <input
                     type="file"
@@ -375,8 +375,8 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                 {errors.receipt && <p className="mt-2 text-xs text-red-500">{errors.receipt}</p>}
 
                 {(formData.receiptUrl || formData.receiptFile || formData.receiptName) && (
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                    <div className="flex min-w-0 items-center gap-2 text-sm text-slate-600">
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-gray-700 bg-white px-3 py-2">
+                    <div className="flex min-w-0 items-center gap-2 text-sm text-slate-600 dark:text-gray-400">
                       <Paperclip className="h-4 w-4 shrink-0 text-purple-500" />
                       <span className="truncate">{formData.receiptFile?.name || formData.receiptName || 'Comprobante adjunto'}</span>
                     </div>
@@ -385,7 +385,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
                         href={formData.receiptPath || formData.receiptUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200"
+                        className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-gray-400 transition-colors hover:bg-slate-200"
                       >
                         Ver
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -398,7 +398,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
 
             {/* Notas */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <FileText className="w-4 h-4" />
                 Notas (Opcional)
               </label>
@@ -415,12 +415,12 @@ const EditProductModal = ({ isOpen, onClose, product, onSave }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <button
             type="button"
             onClick={handleClose}
             disabled={isLoading}
-            className="px-6 py-2 text-slate-600 bg-white border border-slate-200 rounded-2xl shadow-sm hover:bg-slate-50 transition-all duration-200 disabled:opacity-50"
+            className="px-6 py-2 text-slate-600 dark:text-gray-400 bg-white border border-slate-200 dark:border-gray-700 rounded-2xl shadow-sm hover:bg-slate-50 transition-all duration-200 disabled:opacity-50"
           >
             Cancelar
           </button>

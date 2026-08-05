@@ -193,7 +193,7 @@ const ComprasView = ({
                     value: filteredStats.pendingValue,
                     label: 'Valor Pendiente',
                     icon: 'purple',
-                    bgColor: 'bg-orange-100',
+                    bgColor: 'bg-orange-100 dark:bg-orange-900/40',
                     textColor: 'text-orange-600',
                     description: 'Total por comprar'
                 };
@@ -202,7 +202,7 @@ const ComprasView = ({
                     value: filteredStats.completedValue,
                     label: 'Valor Comprado',
                     icon: 'green',
-                    bgColor: 'bg-green-100',
+                    bgColor: 'bg-green-100 dark:bg-green-900/40',
                     textColor: 'text-green-600',
                     description: 'Total invertido'
                 };
@@ -211,7 +211,7 @@ const ComprasView = ({
                     value: products.filter(p => p.priority === 'alta').reduce((sum, p) => sum + p.price, 0),
                     label: 'Valor Prioritario',
                     icon: 'red',
-                    bgColor: 'bg-red-100',
+                    bgColor: 'bg-red-100 dark:bg-red-900/40',
                     textColor: 'text-red-600',
                     description: 'Productos alta prioridad'
                 };
@@ -220,7 +220,7 @@ const ComprasView = ({
                     value: products.filter(p => p.priority === 'media').reduce((sum, p) => sum + p.price, 0),
                     label: 'Valor Prioridad Media',
                     icon: 'yellow',
-                    bgColor: 'bg-yellow-100',
+                    bgColor: 'bg-yellow-100 dark:bg-yellow-900/40',
                     textColor: 'text-yellow-600',
                     description: 'Productos prioridad media'
                 };
@@ -229,7 +229,7 @@ const ComprasView = ({
                     value: products.filter(p => p.priority === 'baja').reduce((sum, p) => sum + p.price, 0),
                     label: 'Valor Prioridad Baja',
                     icon: 'blue',
-                    bgColor: 'bg-blue-100',
+                    bgColor: 'bg-blue-100 dark:bg-blue-900/40',
                     textColor: 'text-blue-600',
                     description: 'Productos prioridad baja'
                 };
@@ -238,7 +238,7 @@ const ComprasView = ({
                     value: filteredStats.pendingValue,
                     label: 'Valor Pendiente',
                     icon: 'purple',
-                    bgColor: 'bg-purple-100',
+                    bgColor: 'bg-purple-100 dark:bg-purple-900/40',
                     iconColor: 'text-purple-600'
                 };
             case 'comprado':
@@ -246,7 +246,7 @@ const ComprasView = ({
                     value: filteredStats.completedValue,
                     label: 'Valor Comprado',
                     icon: 'green',
-                    bgColor: 'bg-green-100',
+                    bgColor: 'bg-green-100 dark:bg-green-900/40',
                     iconColor: 'text-green-600'
                 };
             default: // 'todos'
@@ -254,7 +254,7 @@ const ComprasView = ({
                     value: filterMonth !== 'todos' || searchText.trim() !== '' ? filteredStats.pendingValue : stats.pendingValue,
                     label: 'Valor Pendiente',
                     icon: 'purple',
-                    bgColor: 'bg-purple-100',
+                    bgColor: 'bg-purple-100 dark:bg-purple-900/40',
                     iconColor: 'text-purple-600'
                 };
         }
@@ -311,11 +311,11 @@ const ComprasView = ({
 
 
     return (
-        <div className="flex flex-col h-full bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <div className="flex flex-col h-full bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 transition-colors duration-300">
             {/* Header con título - fijo en la parte superior */}
-            <div className="bg-white shadow-sm border-b border-gray-200 p-6 flex-shrink-0">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestor de Compras</h2>
-                <p className="text-gray-600">El flujo entre querer algo, planearlo y finalmente comprarlo.</p>
+            <div className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 p-6 flex-shrink-0">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 dark:text-gray-100 mb-2">Gestor de Compras</h2>
+                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">El flujo entre querer algo, planearlo y finalmente comprarlo.</p>
             </div>
 
             {/* Contenido scrolleable */}
@@ -324,7 +324,7 @@ const ComprasView = ({
                     <button
                         type="button"
                         onClick={() => setShowMoneyValues((current) => !current)}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/95 px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition-all duration-200 hover:border-purple-300 hover:text-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 dark:bg-gray-800/95 px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-gray-400 shadow-sm transition-all duration-200 hover:border-purple-300 hover:text-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                         title={showMoneyValues ? 'Ocultar valores' : 'Mostrar valores'}
                         aria-label={showMoneyValues ? 'Ocultar valores monetarios' : 'Mostrar valores monetarios'}
                     >
@@ -335,16 +335,16 @@ const ComprasView = ({
 
                 {/* Stats Cards - Dashboard */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 md:p-3 bg-blue-100 rounded-lg">
+                            <div className="p-2 md:p-3 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
                                 <Package2 className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
+                                <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 truncate">
                                     {!hasActiveFilters ? stats.totalProducts : filteredProducts.length}
                                 </p>
-                                <p className="text-xs md:text-sm text-gray-600">
+                                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">
                                     {!hasActiveFilters ? 'Total Productos' :
                                         filterStatus === 'pendientes' ? 'Productos Pendientes' :
                                             filterStatus === 'comprados' ? 'Productos Comprados' :
@@ -354,48 +354,48 @@ const ComprasView = ({
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 md:p-3 bg-orange-100 rounded-lg">
+                            <div className="p-2 md:p-3 bg-orange-100 dark:bg-orange-900/40 rounded-lg">
                                 <Clock className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
+                                <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 truncate">
                                     {!hasActiveFilters ? stats.pendingProducts :
                                         filterStatus === 'pendientes' ? filteredProducts.length :
                                             filteredProducts.filter(p => p.status === 'pendiente').length}
                                 </p>
-                                <p className="text-gray-600 text-xs md:text-sm truncate">Pendientes</p>
+                                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 text-xs md:text-sm truncate">Pendientes</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 md:p-3 bg-green-100 rounded-lg">
+                            <div className="p-2 md:p-3 bg-green-100 dark:bg-green-900/40 rounded-lg">
                                 <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-xl md:text-2xl font-bold text-gray-800 truncate">
+                                <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 truncate">
                                     {!hasActiveFilters ? stats.completedProducts :
                                         filterStatus === 'comprados' ? filteredProducts.length :
                                             filteredProducts.filter(p => p.status === 'comprado').length}
                                 </p>
-                                <p className="text-gray-600 text-xs md:text-sm truncate">Comprados</p>
+                                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 text-xs md:text-sm truncate">Comprados</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center gap-3">
                             <div className={`p-2 md:p-3 ${valueCardConfig.bgColor} rounded-lg flex-shrink-0`}>
                                 <DollarSign className={`w-5 h-5 md:w-6 md:h-6 ${valueCardConfig.iconColor}`} />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-lg md:text-2xl font-bold text-gray-800 break-all leading-tight">
+                                <p className="text-lg md:text-2xl font-bold text-gray-800 dark:text-gray-100 break-all leading-tight">
                                     {displayCurrency(valueCardConfig.value)}
                                 </p>
-                                <p className="text-gray-600 text-xs md:text-sm truncate">{valueCardConfig.label}</p>
+                                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 text-xs md:text-sm truncate">{valueCardConfig.label}</p>
                             </div>
                         </div>
                     </div>
@@ -404,30 +404,30 @@ const ComprasView = ({
                 {/* Tarjetas adicionales para mostrar ambos valores cuando está en "todos" */}
                 {filterStatus === 'todos' && filterMonth === 'todos' && searchText.trim() === '' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-                        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
+                        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 md:p-3 bg-emerald-100 rounded-lg flex-shrink-0">
+                                <div className="p-2 md:p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-lg flex-shrink-0">
                                     <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-lg md:text-2xl font-bold text-gray-800 break-all leading-tight">
+                                    <p className="text-lg md:text-2xl font-bold text-gray-800 dark:text-gray-100 break-all leading-tight">
                                         {displayCurrency(stats.completedValue)}
                                     </p>
-                                    <p className="text-gray-600 text-xs md:text-sm truncate">Valor Comprado</p>
+                                    <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 text-xs md:text-sm truncate">Valor Comprado</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
+                        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 card-animate hover:shadow-xl transition-all duration-300">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 md:p-3 bg-indigo-100 rounded-lg flex-shrink-0">
+                                <div className="p-2 md:p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg flex-shrink-0">
                                     <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-indigo-600" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-lg md:text-2xl font-bold text-gray-800 break-all leading-tight">
+                                    <p className="text-lg md:text-2xl font-bold text-gray-800 dark:text-gray-100 break-all leading-tight">
                                         {displayCurrency(stats.pendingValue + stats.completedValue)}
                                     </p>
-                                    <p className="text-gray-600 text-xs md:text-sm truncate">Valor Total</p>
+                                    <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 text-xs md:text-sm truncate">Valor Total</p>
                                 </div>
                             </div>
                         </div>
@@ -435,14 +435,14 @@ const ComprasView = ({
                 )}
 
                 {/* Filtros principales - arriba */}
-                <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 mb-4">
+                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 mb-4">
                     {/* Filtros visuales con botones */}
                     <div className="flex flex-wrap gap-2">
                         <button
                             onClick={() => setFilterStatus('todos')}
                             className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${filterStatus === 'todos'
                                     ? 'bg-gray-800 text-white shadow-md'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-200 dark:bg-gray-700'
                                 }`}
                         >
                             📋 Todos ({products.length})
@@ -451,7 +451,7 @@ const ComprasView = ({
                             onClick={() => setFilterStatus('pendientes')}
                             className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${filterStatus === 'pendientes'
                                     ? 'bg-orange-500 text-white shadow-md'
-                                    : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                                    : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 hover:bg-orange-200'
                                 }`}
                         >
                             🕒 Pendientes ({products.filter(p => p.status === 'pendiente').length})
@@ -460,7 +460,7 @@ const ComprasView = ({
                             onClick={() => setFilterStatus('comprados')}
                             className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${filterStatus === 'comprados'
                                     ? 'bg-green-500 text-white shadow-md'
-                                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                    : 'bg-green-100 dark:bg-green-900/40 text-green-700 hover:bg-green-200'
                                 }`}
                         >
                             ✅ Comprados ({products.filter(p => p.status === 'comprado').length})
@@ -469,18 +469,18 @@ const ComprasView = ({
                 </div>
 
                 {/* Controles: búsqueda, ordenar y agregar */}
-                <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 mb-6 md:mb-8">
+                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 mb-6 md:mb-8">
                     <div className="flex flex-col gap-4">
                         {/* Búsqueda */}
                         <div className="w-full">
                             <div className="relative">
-                                <Search className="w-4 h-4 absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" />
+                                <Search className="w-4 h-4 absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-gray-500" />
                                 <input
                                     type="text"
                                     placeholder="Buscar productos..."
                                     value={searchText}
                                     onChange={(e) => setSearchText(e.target.value)}
-                                    className="w-full rounded-2xl border border-slate-200 bg-white/95 pl-11 pr-4 py-3 text-sm md:text-base text-slate-700 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 placeholder:text-slate-400"
+                                    className="w-full rounded-2xl border border-slate-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 dark:bg-gray-800/95 pl-11 pr-4 py-3 text-sm md:text-base text-slate-700 dark:text-gray-300 dark:text-gray-600 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 placeholder:text-slate-400 dark:text-gray-500"
                                 />
                             </div>
                         </div>
@@ -498,7 +498,7 @@ const ComprasView = ({
                             {(filterStatus.includes('prioridad') || filterStatus === 'prioritarios') && (
                                 <button
                                     onClick={() => setFilterStatus('todos')}
-                                    className="px-3 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 flex-shrink-0"
+                                    className="px-3 py-3 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-all duration-200 flex-shrink-0"
                                     title="Limpiar filtro de prioridad"
                                 >
                                     <X className="w-4 h-4" />
@@ -517,7 +517,7 @@ const ComprasView = ({
                             {filterMonth !== 'todos' && (
                                 <button
                                     onClick={() => setFilterMonth('todos')}
-                                    className="px-3 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 flex-shrink-0"
+                                    className="px-3 py-3 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-all duration-200 flex-shrink-0"
                                     title="Limpiar filtro de mes"
                                 >
                                     <X className="w-4 h-4" />
@@ -557,15 +557,15 @@ const ComprasView = ({
 
                 {/* Lista de productos */}
                 {filteredProducts.length === 0 ? (
-                    <div className="bg-white rounded-xl shadow-lg p-12 text-center">
-                        <Package2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-xl font-medium text-gray-500 mb-2">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-12 text-center">
+                        <Package2 className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                        <h3 className="text-xl font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">
                             {searchText || filterStatus !== 'todos' || filterMonth !== 'todos'
                                 ? 'No se encontraron productos'
                                 : 'No tienes productos en tu lista'
                             }
                         </h3>
-                        <p className="text-gray-400 mb-6">
+                        <p className="text-gray-400 dark:text-gray-500 mb-6">
                             {searchText || filterStatus !== 'todos' || filterMonth !== 'todos'
                                 ? 'Intenta cambiar los filtros de búsqueda'
                                 : 'Comienza agregando tu primer producto deseado'
@@ -586,7 +586,7 @@ const ComprasView = ({
                         {paginatedProducts.map((product, index) => (
                             <div
                                 key={product.id}
-                                className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden min-h-[30rem] flex flex-col card-animate list-item-animate"
+                                className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-800 overflow-hidden min-h-[30rem] flex flex-col card-animate list-item-animate"
                                 style={{ animationDelay: `${index * 0.1}s` }}
                             >
                                 {/* Header de la card */}
@@ -607,8 +607,8 @@ const ComprasView = ({
                                                 {product.name}
                                             </h3>
                                             <div className="flex items-center gap-2 mb-2">
-                                                <span className="text-sm text-gray-600 truncate">{product.category}</span>
-                                                <span className="text-lg font-bold text-gray-800 whitespace-nowrap">
+                                                <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 truncate">{product.category}</span>
+                                                <span className="text-lg font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                                                     {displayCurrency(product.price)}
                                                 </span>
                                             </div>
@@ -616,14 +616,14 @@ const ComprasView = ({
                                         <div className="flex gap-1 ml-2 flex-shrink-0">
                                             <button
                                                 onClick={() => onEditProduct(product)}
-                                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 btn-animate"
+                                                className="p-2 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/40 rounded-lg transition-all duration-200 btn-animate"
                                                 title="Editar producto"
                                             >
                                                 <Edit3 className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={() => onDeleteProduct(product.id)}
-                                                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 btn-animate"
+                                                className="p-2 text-red-600 hover:bg-red-100 dark:bg-red-900/40 rounded-lg transition-all duration-200 btn-animate"
                                                 title="Eliminar producto"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -635,8 +635,8 @@ const ComprasView = ({
                                 {/* Contenido de la card - área flexible */}
                                 <div className="p-4 flex-1 flex flex-col">
                                     <div className="flex-1 flex flex-col gap-3">
-                                        <div className="min-h-[2.5rem] rounded-2xl bg-slate-50/70 px-3 py-2">
-                                            <p className={`text-sm leading-5 line-clamp-3 ${product.notes?.trim() ? 'text-gray-600' : 'text-gray-400'}`}>
+                                        <div className="min-h-[2.5rem] rounded-2xl bg-slate-50 dark:bg-gray-800/70 dark:bg-gray-800/70 px-3 py-2">
+                                            <p className={`text-sm leading-5 line-clamp-3 ${product.notes?.trim() ? 'text-gray-600 dark:text-gray-400 dark:text-gray-500' : 'text-gray-400 dark:text-gray-500'}`}>
                                                 {product.notes?.trim()
                                                     ? product.notes
                                                     : product.status === 'comprado'
@@ -671,10 +671,10 @@ const ComprasView = ({
                                             <span className={`
                         px-3 py-1.5 rounded-full text-xs font-medium flex-shrink-0
                         ${product.priority === 'alta'
-                                                    ? 'bg-red-100 text-red-700'
+                                                    ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400'
                                                     : product.priority === 'media'
-                                                        ? 'bg-yellow-100 text-yellow-700'
-                                                        : 'bg-blue-100 text-blue-700'
+                                                        ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400'
+                                                        : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400'
                                                 }
                       `}>
                                                 {product.priority === 'alta' ? '🔴 Alta' :
@@ -701,7 +701,7 @@ const ComprasView = ({
                                                     <button
                                                         type="button"
                                                         onClick={() => handleViewReceipt(product)}
-                                                        className="inline-flex max-w-full items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-[11px] font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-100 whitespace-nowrap"
+                                                        className="inline-flex max-w-full items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-[11px] font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-100 dark:bg-purple-900/40 whitespace-nowrap"
                                                         title={product.receiptName || 'Ver comprobante'}
                                                     >
                                                         <Paperclip className="w-3 h-3 flex-shrink-0" />
@@ -709,7 +709,7 @@ const ComprasView = ({
                                                         <ExternalLink className="w-3 h-3 flex-shrink-0" />
                                                     </button>
                                                 ) : (
-                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-500 shadow-sm whitespace-nowrap">
+                                                    <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 dark:bg-gray-800 px-3 py-2 text-[11px] font-semibold text-slate-500 dark:text-gray-500 shadow-sm whitespace-nowrap">
                                                         <Paperclip className="w-3 h-3 flex-shrink-0" />
                                                         <span>Sin comprobante</span>
                                                     </div>
@@ -744,10 +744,10 @@ const ComprasView = ({
 
                 {/* Controles de paginación */}
                 {filteredProducts.length > 0 && totalPages > 1 && (
-                    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 mt-6">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 mt-6">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             {/* Información de página */}
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">
                                 Mostrando {startIndex + 1} - {Math.min(endIndex, totalItems)} de {totalItems} productos
                             </div>
 
@@ -760,8 +760,8 @@ const ComprasView = ({
                                     className={`
                                         px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-1
                                         ${currentPage === 1
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
+                                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-300'}
                                     `}
                                 >
                                     <ChevronLeft className="w-4 h-4" />
@@ -780,7 +780,7 @@ const ComprasView = ({
 
                                         if (!showPage) {
                                             if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
-                                                return <span key={pageNumber} className="px-2 text-gray-400">...</span>;
+                                                return <span key={pageNumber} className="px-2 text-gray-400 dark:text-gray-500">...</span>;
                                             }
                                             return null;
                                         }
@@ -793,7 +793,7 @@ const ComprasView = ({
                                                     w-8 h-8 rounded-lg font-medium text-sm transition-all duration-200
                                                     ${isCurrentPage
                                                         ? 'bg-purple-600 text-white shadow-md'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-200 dark:bg-gray-700'}
                                                 `}
                                             >
                                                 {pageNumber}
@@ -809,8 +809,8 @@ const ComprasView = ({
                                     className={`
                                         px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-1
                                         ${currentPage === totalPages
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
+                                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-300'}
                                     `}
                                 >
                                     Siguiente

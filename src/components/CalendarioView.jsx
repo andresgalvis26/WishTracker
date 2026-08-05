@@ -55,13 +55,13 @@ const CalendarioView = ({ products }) => {
       label: 'Comprados',
       value: totalPurchased,
       icon: CheckCircle2,
-      tone: 'bg-emerald-500 text-white'
+      tone: 'bg-emerald-50 dark:bg-emerald-900/300 text-white'
     },
     {
       label: 'Planificados',
       value: totalTarget,
       icon: Target,
-      tone: 'bg-blue-500 text-white'
+      tone: 'bg-blue-50 dark:bg-blue-900/300 text-white'
     },
     {
       label: 'Este mes',
@@ -72,14 +72,14 @@ const CalendarioView = ({ products }) => {
   ];
 
   return (
-    <div className="flex h-full flex-col bg-slate-50">
-      <div className="flex-shrink-0 border-b border-slate-200 bg-white px-4 py-5 sm:px-6">
+    <div className="flex h-full flex-col bg-slate-50 dark:bg-gray-800 dark:bg-gray-900 transition-colors duration-300">
+      <div className="flex-shrink-0 border-b border-slate-200 dark:border-gray-700 dark:border-gray-800 bg-white dark:bg-gray-900 dark:bg-gray-900 px-4 py-5 sm:px-6">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-600">Calendario</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">Calendario de compras</h2>
-              <p className="mt-2 max-w-2xl text-sm text-slate-500">
+              <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-gray-100 sm:text-3xl">Calendario de compras</h2>
+              <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-gray-400">
                 Visualiza compras realizadas y fechas objetivo en una sola vista mensual.
               </p>
             </div>
@@ -89,14 +89,14 @@ const CalendarioView = ({ products }) => {
                 const Icon = item.icon;
 
                 return (
-                  <div key={item.label} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <div key={item.label} className="rounded-2xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${item.tone}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xl font-bold leading-none text-slate-900">{item.value}</p>
-                        <p className="mt-1 truncate text-xs font-medium text-slate-500">{item.label}</p>
+                        <p className="text-xl font-bold leading-none text-slate-900 dark:text-gray-100">{item.value}</p>
+                        <p className="mt-1 truncate text-xs font-medium text-slate-500 dark:text-gray-400">{item.label}</p>
                       </div>
                     </div>
                   </div>
@@ -110,12 +110,12 @@ const CalendarioView = ({ products }) => {
       <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
         <div className="mx-auto max-w-7xl">
           {products.length === 0 ? (
-            <div className="flex min-h-96 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center shadow-sm">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
-                <Calendar className="h-8 w-8 text-slate-400" />
+            <div className="flex min-h-96 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-900 p-8 text-center shadow-sm">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-gray-800">
+                <Calendar className="h-8 w-8 text-slate-400 dark:text-gray-500" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-700">No hay productos para mostrar</h3>
-              <p className="mt-2 max-w-sm text-sm text-slate-500">
+              <h3 className="text-lg font-semibold text-slate-700 dark:text-gray-300">No hay productos para mostrar</h3>
+              <p className="mt-2 max-w-sm text-sm text-slate-500 dark:text-gray-400">
                 Agrega productos con fechas para verlos organizados en el calendario.
               </p>
             </div>
@@ -123,15 +123,15 @@ const CalendarioView = ({ products }) => {
             <>
               <ProductCalendar products={products} onDateClick={handleDateClick} />
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <div className="rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 shadow-sm sm:p-6">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-500">Resumen</p>
-                    <h3 className="text-xl font-bold text-slate-900">Actividad del calendario</h3>
+                    <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Resumen</p>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-gray-100">Actividad del calendario</h3>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
-                    <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-700 ring-1 ring-emerald-100">Compras: {totalPurchased}</span>
-                    <span className="rounded-full bg-blue-50 px-3 py-1.5 text-blue-700 ring-1 ring-blue-100">Objetivos: {totalTarget}</span>
+                    <span className="rounded-full bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 text-emerald-700 ring-1 ring-emerald-100">Compras: {totalPurchased}</span>
+                    <span className="rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 text-blue-700 ring-1 ring-blue-100">Objetivos: {totalTarget}</span>
                   </div>
                 </div>
 
@@ -142,11 +142,11 @@ const CalendarioView = ({ products }) => {
                       const daysLeft = Math.ceil((targetDate.setHours(0, 0, 0, 0) - todayStart.getTime()) / (1000 * 60 * 60 * 24));
 
                       return (
-                        <div key={product.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                        <div key={product.id} className="rounded-2xl border border-slate-100 dark:border-gray-700 bg-slate-50 dark:bg-gray-800 p-4">
                           <div className="flex items-start justify-between gap-4">
                             <div className="min-w-0">
-                              <p className="truncate font-semibold text-slate-900">{product.name}</p>
-                              <p className="mt-1 text-sm text-slate-500">
+                              <p className="truncate font-semibold text-slate-900 dark:text-gray-100">{product.name}</p>
+                              <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
                                 {product.category || 'Sin categoria'} - {formatCurrency(product.price)}
                               </p>
                             </div>
@@ -157,7 +157,7 @@ const CalendarioView = ({ products }) => {
                                   month: 'short'
                                 })}
                               </p>
-                              <p className="text-xs text-slate-500">{daysLeft} dia{daysLeft === 1 ? '' : 's'}</p>
+                              <p className="text-xs text-slate-500 dark:text-gray-400">{daysLeft} dia{daysLeft === 1 ? '' : 's'}</p>
                             </div>
                           </div>
                         </div>
@@ -165,7 +165,7 @@ const CalendarioView = ({ products }) => {
                     })}
                   </div>
                 ) : (
-                  <div className="mt-5 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                  <div className="mt-5 rounded-2xl border border-dashed border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-800 px-4 py-6 text-sm text-slate-500 dark:text-gray-400">
                     No hay compras planificadas proximas.
                   </div>
                 )}

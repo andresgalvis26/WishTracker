@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 /* Estilos para React DatePicker */
 @import "react-datepicker/dist/react-datepicker.css";
 

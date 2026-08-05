@@ -14,7 +14,7 @@ const LoadingSpinner = ({ size = 'md', text = '', className = '' }) => {
       <div className="flex flex-col items-center gap-3">
         <Loader2 className={`${sizeClasses[size]} text-purple-600 loading-spin`} />
         {text && (
-          <p className="text-gray-600 text-sm font-medium">{text}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">{text}</p>
         )}
       </div>
     </div>
@@ -26,7 +26,7 @@ const LoadingOverlay = ({ isVisible, text = 'Cargando...' }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 modal-backdrop-animate">
-      <div className="bg-white rounded-xl p-8 shadow-2xl modal-animate">
+      <div className="bg-white dark:bg-gray-900 rounded-xl p-8 shadow-2xl modal-animate">
         <LoadingSpinner size="lg" text={text} />
       </div>
     </div>
@@ -62,15 +62,15 @@ const LoadingButton = ({
 const LoadingCard = ({ className = '' }) => {
   return (
     <div className={`animate-pulse ${className}`}>
-      <div className="bg-white rounded-xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+          <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
         </div>
         <div className="space-y-3">
-          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
         </div>
       </div>
     </div>
@@ -85,19 +85,19 @@ const LoadingTable = ({ rows = 5, columns = 4 }) => {
         <div className="bg-gray-50 p-4 border-b">
           <div className="flex gap-4">
             {Array.from({ length: columns }).map((_, i) => (
-              <div key={i} className="h-4 bg-gray-200 rounded flex-1"></div>
+              <div key={i} className="h-4 bg-gray-200 dark:bg-gray-700 rounded flex-1"></div>
             ))}
           </div>
         </div>
         
         {/* Rows */}
         {Array.from({ length: rows }).map((_, rowIndex) => (
-          <div key={rowIndex} className="p-4 border-b border-gray-100 last:border-b-0">
+          <div key={rowIndex} className="p-4 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
             <div className="flex gap-4">
               {Array.from({ length: columns }).map((_, colIndex) => (
                 <div 
                   key={colIndex} 
-                  className={`h-4 bg-gray-200 rounded flex-1 ${colIndex === 0 ? 'w-1/2' : ''}`}
+                  className={`h-4 bg-gray-200 dark:bg-gray-700 rounded flex-1 ${colIndex === 0 ? 'w-1/2' : ''}`}
                   style={{
                     animationDelay: `${(rowIndex * 0.1) + (colIndex * 0.05)}s`
                   }}
@@ -136,7 +136,7 @@ const SkeletonLine = ({ className = '', width = 'full' }) => {
   };
 
   return (
-    <div className={`h-4 bg-gray-200 rounded animate-pulse ${widths[width]} ${className}`}></div>
+    <div className={`h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse ${widths[width]} ${className}`}></div>
   );
 };
 

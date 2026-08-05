@@ -426,12 +426,12 @@ const WishlistApp = ({ user }) => {
   // Loading spinner
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 flex items-center justify-center transition-colors duration-300">
         <div className="text-center card-animate">
-          <div className="bg-white rounded-xl p-8 shadow-xl">
+          <div className="bg-white dark:bg-gray-900 rounded-xl p-8 shadow-xl">
             <Loader2 className="w-12 h-12 text-purple-600 loading-spin mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">Cargando productos...</p>
-            <p className="text-gray-500 text-sm mt-2">Preparando tu lista de deseos</p>
+            <p className="text-gray-600 dark:text-gray-400 font-medium">Cargando productos...</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">Preparando tu lista de deseos</p>
           </div>
         </div>
       </div>
@@ -441,7 +441,7 @@ const WishlistApp = ({ user }) => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row relative">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex flex-col md:flex-row relative transition-colors duration-300">
       {/* Loading Overlay para operaciones */}
       <LoadingOverlay isVisible={actionLoading} text="Procesando..." />
 
@@ -460,7 +460,7 @@ const WishlistApp = ({ user }) => {
             console.log('Click en botón toggle desktop');
             setSidebarVisible(true);
           }}
-          className="hidden md:flex fixed top-6 right-6 z-40 w-12 h-12 items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-full shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-200"
+          className="hidden md:flex fixed top-6 right-6 z-40 w-12 h-12 items-center justify-center bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-full shadow-lg hover:shadow-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200"
           title="Mostrar menú"
         >
           <Menu className="w-5 h-5" />
@@ -468,13 +468,13 @@ const WishlistApp = ({ user }) => {
       )}
 
       {/* Header con botón toggle para móviles */}
-      <div className="fixed top-0 left-0 right-0 z-30 bg-white shadow-sm border-b border-gray-200 p-4 flex items-center gap-3 md:hidden">
+      <div className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3 md:hidden">
         <button
           onClick={() => {
             console.log('Click en botón móvil');
             toggleSidebar();
           }}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 btn-animate header-toggle"
+          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 btn-animate header-toggle"
           title={sidebarVisible ? 'Ocultar sidebar' : 'Mostrar sidebar'}
         >
           <Menu className="w-5 h-5" />
@@ -482,14 +482,14 @@ const WishlistApp = ({ user }) => {
 
         <div className="flex items-center gap-2">
           <Package2 className="w-6 h-6 text-purple-600" />
-          <h1 className="text-lg font-bold text-gray-800">WishTracker</h1>
+          <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">WishTracker</h1>
         </div>
       </div>
 
       {/* Sidebar */}
       <div
         className={`
-          fixed top-0 left-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 
+          fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-900 shadow-xl border-r border-gray-200 dark:border-gray-800 
           transition-transform duration-300 ease-in-out z-50
           ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}
         `}

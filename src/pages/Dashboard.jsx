@@ -131,7 +131,7 @@ const Dashboard = ({ user, products = [] }) => {
 	const displayCurrency = (value) => (showMoneyValues ? formatCurrency(value) : 'COP ••••••');
 
 	return (
-		<div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-blue-50/80">
+		<div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-blue-50/80 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 transition-colors duration-300">
 			<div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-6">
 				<section className="relative overflow-hidden rounded-3xl border border-white/70 bg-slate-900 text-white shadow-2xl">
 					<div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.45),_transparent_32%),radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.22),_transparent_28%)]" />
@@ -228,13 +228,13 @@ const Dashboard = ({ user, products = [] }) => {
 				<section className="grid gap-6 xl:grid-cols-[1.25fr_0.85fr]">
 					<div className="space-y-6">
 						<div className="grid gap-6 lg:grid-cols-2">
-							<div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+							<div className="rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
 								<div className="flex items-center justify-between gap-3">
 									<div>
-										<p className="text-sm font-medium text-slate-500">Actividad reciente</p>
-										<h2 className="text-xl font-semibold text-slate-900">Últimos movimientos</h2>
+										<p className="text-sm font-medium text-slate-500 dark:text-gray-400">Actividad reciente</p>
+										<h2 className="text-xl font-semibold text-slate-900 dark:text-gray-100">Últimos movimientos</h2>
 									</div>
-									<div className="rounded-2xl bg-blue-50 p-3 text-blue-600">
+									<div className="rounded-2xl bg-blue-50 dark:bg-blue-900/30 p-3 text-blue-600">
 										<TrendingUp className="h-5 w-5" />
 									</div>
 								</div>
@@ -242,34 +242,34 @@ const Dashboard = ({ user, products = [] }) => {
 								<div className="mt-5 space-y-3">
 									{recentActivity.length > 0 ? (
 										recentActivity.map((product) => (
-											<div key={product.id} className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+											<div key={product.id} className="flex items-center justify-between rounded-2xl bg-slate-50 dark:bg-gray-800 px-4 py-3">
 												<div className="min-w-0">
-													<p className="truncate font-medium text-slate-900">{product.name}</p>
-													<p className="text-sm text-slate-500">
+													<p className="truncate font-medium text-slate-900 dark:text-gray-100">{product.name}</p>
+													<p className="text-sm text-slate-500 dark:text-gray-400">
 														{product.category || 'Sin categoría'} · {product.status === 'comprado' ? 'Comprado' : 'Pendiente'}
 													</p>
 												</div>
 												<div className="text-right">
-													<p className="font-semibold text-slate-900">{formatCurrency(product.price)}</p>
-													<p className="text-xs text-slate-500">{formatLongDate(new Date(product.dateAdded || Date.now()))}</p>
+													<p className="font-semibold text-slate-900 dark:text-gray-100">{formatCurrency(product.price)}</p>
+													<p className="text-xs text-slate-500 dark:text-gray-400">{formatLongDate(new Date(product.dateAdded || Date.now()))}</p>
 												</div>
 											</div>
 										))
 									) : (
-										<p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">
+										<p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500 dark:text-gray-400">
 											Cuando agregues productos verás aquí los movimientos más recientes.
 										</p>
 									)}
 								</div>
 							</div>
 
-							<div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+							<div className="rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
 								<div className="flex items-center justify-between gap-3">
 									<div>
-										<p className="text-sm font-medium text-slate-500">Distribución</p>
-										<h2 className="text-xl font-semibold text-slate-900">Por categoría</h2>
+										<p className="text-sm font-medium text-slate-500 dark:text-gray-400">Distribución</p>
+										<h2 className="text-xl font-semibold text-slate-900 dark:text-gray-100">Por categoría</h2>
 									</div>
-									<div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
+									<div className="rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 p-3 text-emerald-600">
 										<Wallet className="h-5 w-5" />
 									</div>
 								</div>
@@ -279,10 +279,10 @@ const Dashboard = ({ user, products = [] }) => {
 										topCategories.map(([category, count]) => (
 											<div key={category}>
 												<div className="mb-2 flex items-center justify-between text-sm">
-													<span className="font-medium text-slate-700">{category}</span>
-													<span className="text-slate-500">{count} producto{count === 1 ? '' : 's'}</span>
+													<span className="font-medium text-slate-700 dark:text-gray-300">{category}</span>
+													<span className="text-slate-500 dark:text-gray-400">{count} producto{count === 1 ? '' : 's'}</span>
 												</div>
-												<div className="h-3 overflow-hidden rounded-full bg-slate-100">
+												<div className="h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-gray-700">
 													<div
 														className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
 														style={{ width: `${(count / maxCategoryCount) * 100}%` }}
@@ -291,7 +291,7 @@ const Dashboard = ({ user, products = [] }) => {
 											</div>
 										))
 									) : (
-										<p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">
+										<p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500 dark:text-gray-400">
 											La distribución por categoría aparecerá aquí cuando cargues productos.
 										</p>
 									)}
@@ -299,13 +299,13 @@ const Dashboard = ({ user, products = [] }) => {
 							</div>
 						</div>
 
-						<div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div className="rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
 							<div className="flex items-center justify-between gap-3">
 								<div>
-									<p className="text-sm font-medium text-slate-500">Tendencia</p>
-									<h2 className="text-xl font-semibold text-slate-900">Compras de los últimos 6 meses</h2>
+									<p className="text-sm font-medium text-slate-500 dark:text-gray-400">Tendencia</p>
+									<h2 className="text-xl font-semibold text-slate-900 dark:text-gray-100">Compras de los últimos 6 meses</h2>
 								</div>
-								<div className="rounded-2xl bg-violet-50 p-3 text-violet-600">
+								<div className="rounded-2xl bg-violet-50 dark:bg-violet-900/30 p-3 text-violet-600">
 									<Clock3 className="h-5 w-5" />
 								</div>
 							</div>
@@ -313,7 +313,7 @@ const Dashboard = ({ user, products = [] }) => {
 							<div className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-6">
 								{monthlySeries.map((item) => (
 									<div key={item.label} className="flex flex-col items-center gap-3">
-										<div className="flex min-h-36 w-full items-end rounded-2xl bg-slate-50 px-2 pb-2">
+										<div className="flex min-h-36 w-full items-end rounded-2xl bg-slate-50 dark:bg-gray-800 px-2 pb-2">
 											<div
 												className="w-full rounded-xl bg-gradient-to-t from-slate-900 via-blue-600 to-cyan-400 transition-all"
 												style={{ height: `${(item.count / maxMonthlyCount) * 100}%` }}
@@ -321,8 +321,8 @@ const Dashboard = ({ user, products = [] }) => {
 											/>
 										</div>
 										<div className="text-center">
-											<p className="text-sm font-medium text-slate-900">{item.count}</p>
-											<p className="text-xs uppercase tracking-wide text-slate-500">{item.label}</p>
+											<p className="text-sm font-medium text-slate-900 dark:text-gray-100">{item.count}</p>
+											<p className="text-xs uppercase tracking-wide text-slate-500 dark:text-gray-400">{item.label}</p>
 										</div>
 									</div>
 								))}
@@ -331,26 +331,26 @@ const Dashboard = ({ user, products = [] }) => {
 					</div>
 
 					<div className="space-y-6">
-						<div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div className="rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
 							<div className="flex items-center justify-between gap-3">
 								<div>
-									<p className="text-sm font-medium text-slate-500">Widget</p>
-									<h2 className="text-xl font-semibold text-slate-900">Calendario compacto</h2>
+									<p className="text-sm font-medium text-slate-500 dark:text-gray-400">Widget</p>
+									<h2 className="text-xl font-semibold text-slate-900 dark:text-gray-100">Calendario compacto</h2>
 								</div>
-								<div className="rounded-2xl bg-amber-50 p-3 text-amber-600">
+								<div className="rounded-2xl bg-amber-50 dark:bg-amber-900/30 p-3 text-amber-600">
 									<Calendar className="h-5 w-5" />
 								</div>
 							</div>
 
 							<div className="mt-4 flex items-center justify-between">
-								<p className="text-sm font-medium text-slate-900">{formatLongDate(today)}</p>
-								<div className="flex items-center gap-3 text-xs text-slate-500">
-									<span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-blue-500" /> Planificado</span>
-									<span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Comprado</span>
+								<p className="text-sm font-medium text-slate-900 dark:text-gray-100">{formatLongDate(today)}</p>
+								<div className="flex items-center gap-3 text-xs text-slate-500 dark:text-gray-400">
+									<span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-blue-50 dark:bg-blue-900/300" /> Planificado</span>
+									<span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-50 dark:bg-emerald-900/300" /> Comprado</span>
 								</div>
 							</div>
 
-							<div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400">
+							<div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 dark:text-gray-500">
 								{['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day) => (
 									<div key={day} className="py-1">{day}</div>
 								))}
@@ -359,7 +359,7 @@ const Dashboard = ({ user, products = [] }) => {
 							<div className="mt-2 grid grid-cols-7 gap-1">
 								{calendarCells.map((cell, index) => {
 									if (!cell) {
-										return <div key={`empty-${index}`} className="aspect-square rounded-2xl bg-slate-50/70" />;
+										return <div key={`empty-${index}`} className="aspect-square rounded-2xl bg-slate-50 dark:bg-gray-800/70" />;
 									}
 
 									const hasTarget = cell.targetCount > 0;
@@ -371,16 +371,16 @@ const Dashboard = ({ user, products = [] }) => {
 											className={`aspect-square rounded-2xl border p-1 text-left transition-all ${
 												cell.isToday
 													? 'border-slate-900 bg-slate-900 text-white shadow-lg'
-													: 'border-slate-100 bg-white hover:border-slate-200'
+													: 'border-slate-100 dark:border-gray-700 bg-white hover:border-slate-200'
 											}`}
 										>
 											<div className="flex h-full flex-col justify-between">
-												<span className={`text-[11px] font-semibold ${cell.isToday ? 'text-white' : 'text-slate-700'}`}>
+												<span className={`text-[11px] font-semibold ${cell.isToday ? 'text-white' : 'text-slate-700 dark:text-gray-300'}`}>
 													{cell.day}
 												</span>
 												<div className="flex items-center gap-1 pb-1">
-													{hasPurchase && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
-													{hasTarget && <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />}
+													{hasPurchase && <span className="h-1.5 w-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/300" />}
+													{hasTarget && <span className="h-1.5 w-1.5 rounded-full bg-blue-50 dark:bg-blue-900/300" />}
 												</div>
 											</div>
 										</div>
@@ -389,13 +389,13 @@ const Dashboard = ({ user, products = [] }) => {
 							</div>
 						</div>
 
-						<div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div className="rounded-3xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
 							<div className="flex items-center justify-between gap-3">
 								<div>
-									<p className="text-sm font-medium text-slate-500">Próximos hitos</p>
-									<h2 className="text-xl font-semibold text-slate-900">Fechas importantes</h2>
+									<p className="text-sm font-medium text-slate-500 dark:text-gray-400">Próximos hitos</p>
+									<h2 className="text-xl font-semibold text-slate-900 dark:text-gray-100">Fechas importantes</h2>
 								</div>
-								<div className="rounded-2xl bg-red-50 p-3 text-red-600">
+								<div className="rounded-2xl bg-red-50 dark:bg-red-900/30 p-3 text-red-600">
 									<Target className="h-5 w-5" />
 								</div>
 							</div>
@@ -409,22 +409,22 @@ const Dashboard = ({ user, products = [] }) => {
 										);
 
 										return (
-											<div key={product.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+											<div key={product.id} className="rounded-2xl border border-slate-100 dark:border-gray-700 bg-slate-50 dark:bg-gray-800 p-4">
 												<div className="flex items-start justify-between gap-3">
 													<div className="min-w-0">
-														<p className="truncate font-medium text-slate-900">{product.name}</p>
-														<p className="text-sm text-slate-500">{product.category || 'Sin categoría'} · {formatCurrency(product.price)}</p>
+														<p className="truncate font-medium text-slate-900 dark:text-gray-100">{product.name}</p>
+														<p className="text-sm text-slate-500 dark:text-gray-400">{product.category || 'Sin categoría'} · {formatCurrency(product.price)}</p>
 													</div>
 													<div className="text-right text-sm">
 														<p className="font-semibold text-blue-600">{formatShortDate(product.targetDateValue)}</p>
-														<p className="text-slate-500">{daysLeft} día{daysLeft === 1 ? '' : 's'}</p>
+														<p className="text-slate-500 dark:text-gray-400">{daysLeft} día{daysLeft === 1 ? '' : 's'}</p>
 													</div>
 												</div>
 											</div>
 										);
 									})
 								) : (
-									<p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">
+									<p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500 dark:text-gray-400">
 										No hay fechas próximas pendientes. Todo está al día o todavía no se agregaron fechas.
 									</p>
 								)}

@@ -4,6 +4,7 @@ import './index.css'
 import './styles/animations.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { ThemeProvider } from './context/ThemeContext.jsx'
 
 // Registrar Service Worker para PWA
 if ('serviceWorker' in navigator) {
@@ -21,7 +22,9 @@ if ('serviceWorker' in navigator) {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </AuthProvider>
   </StrictMode>,
 )
