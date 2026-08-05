@@ -1,12 +1,57 @@
-# React + Vite
+# WishTracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación para gestionar tu lista de compras y deseos. Construida con React + Vite y Supabase como backend.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React 19, Vite 7, Tailwind CSS 4
+- **Backend**: Supabase (autenticación, base de datos PostgreSQL, almacenamiento de archivos)
+- **PWA**: Service worker personalizado para funcionamiento offline
 
-## Expanding the ESLint configuration
+## Requisitos
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Node.js 18+
+- Cuenta gratuita en [Supabase](https://supabase.com)
+
+## Configuración
+
+1. Clona el repositorio
+   ```bash
+   git clone <repo-url>
+   cd WishTracker
+   ```
+
+2. Instala dependencias
+   ```bash
+   npm install
+   ```
+
+3. Configura las credenciales de Supabase en `src/supebase.js`:
+   - `supabaseUrl`: URL de tu proyecto Supabase
+   - `supabaseKey`: clave anónima (anon key) de tu proyecto
+
+4. Inicia el servidor de desarrollo
+   ```bash
+   npm run dev
+   ```
+
+## Scripts disponibles
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Servidor de desarrollo con HMR |
+| `npm run build` | Build de producción |
+| `npm run preview` | Vista previa del build de producción |
+| `npm run generate-icons` | Genera los iconos PWA |
+
+## Supabase Keep-Alive
+
+Supabase pausa los proyectos del tier gratuito después de ~7 días de inactividad. Para evitarlo, este repositorio incluye un **GitHub Actions workflow** (`.github/workflows/supabase-keepalive.yml`) que hace una petición automática cada 5 días, manteniendo el proyecto activo sin costo.
+
+### Configuración del secreto
+
+Para que el workflow funcione, debes agregar un secreto en tu repositorio de GitHub:
+
+1. Ve a **Settings → Secrets and variables → Actions → New repository secret**
+2. **Name**: `SUPABASE_ANON_KEY`
+3. **Secret**: la clave anónima de tu proyecto Supabase

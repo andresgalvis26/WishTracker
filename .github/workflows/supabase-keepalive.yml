@@ -1,8 +1,14 @@
+# Workflow que evita que Supabase pause el proyecto por inactividad.
+# Supabase suspende proyectos del tier gratuito tras ~7 días sin tráfico.
+# Este workflow hace una petición cada 5 días para mantenerlo activo.
+
 name: Supabase Keep-Alive
 
 on:
+  # Se ejecuta automáticamente cada 5 días a las 00:00 UTC
   schedule:
     - cron: '0 0 */5 * *'
+  # Permite ejecución manual desde la pestaña "Actions" en GitHub
   workflow_dispatch:
 
 jobs:
@@ -11,6 +17,8 @@ jobs:
     steps:
       - name: Ping Supabase
         run: |
+          # Llamada al endpoint /auth/v1/settings con la API key anónima
+          # Si responde 200, el proyecto sigue activo
           curl -s -o /dev/null -w "%{http_code}" \
             "https://bwmdxghbztnxtxqerifv.supabase.co/auth/v1/settings" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}"
